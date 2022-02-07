@@ -17,7 +17,7 @@ jobs:
           approveCommand="/approve"
           comments=$(curl -sLX GET '${{ github.event.comment.issue_url }}/comments' \
             --header "Accept: application/vnd.github.v3+json" \
-            --header "Authorization: Bearer ${{ secrets.GHEC_ADMIN_TOKEN }}")
+            --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}")
           authorized=false
           for comment in $(echo $comments | jq -r '.[] | @base64'); do
               body=$(echo $comment | base64 --decode | jq -r '.body')
