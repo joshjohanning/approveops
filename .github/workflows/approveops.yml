@@ -1,7 +1,7 @@
-name: Approve Ops
+name: ApproveOps
 on:
   issue_comment:
-    types: [created, deleted, edited]
+    types: [created, edited]
 
 jobs:
   approveops:
