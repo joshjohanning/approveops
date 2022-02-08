@@ -6,14 +6,22 @@ on:
 jobs:
   approveops:
     runs-on: ubuntu-latest
-    if: contains(github.event.comment.body, '/run-dry-run-migration')
+    if: contains(github.event.comment.body, '/run-migration')
     steps:
+      - uses: jnwng/github-app-installation-token-action@v2
+        id: get_installation_token
+        with: 
+          appId: 170284
+          installationId: 23023339
+          privateKey: ${{ secrets.PRIVATE_KEY }}
+        
+      # if you don't use a GitHub app, remove the ${{ steps.get_installation_token.outputs.token }} below and create your own PAT secret
       - id: check-approval
         name: check if there is an approve command from authorized party
         run: | 
           users=$(curl -sLX GET 'https://api.github.com/orgs/${{ github.repository_owner }}/teams/approver-team/members' \
             --header "Accept: application/vnd.github.v3+json" \
-            --header "Authorization: Bearer ${{ secrets.GHEC_ADMIN_TOKEN }}" | jq -c '.[].login')
+            --header "Authorization: Bearer ${{ steps.get_installation_token.outputs.token }}" | jq -c '.[].login')
           approveCommand="/approve"
           comments=$(curl -sLX GET '${{ github.event.comment.issue_url }}/comments' \
             --header "Accept: application/vnd.github.v3+json" \
@@ -41,7 +49,7 @@ jobs:
         name: Create completed comment
         uses: peter-evans/create-or-update-comment@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.get_installation_token.outputs.token }} # or ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.issue.number }}
           body: |
             Hey, @${{ github.event.comment.user.login }}!
@@ -51,7 +59,7 @@ jobs:
         name: Create completed comment
         uses: peter-evans/create-or-update-comment@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.get_installation_token.outputs.token }} # or ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.issue.number }}
           body: |
             Hey, @${{ github.event.comment.user.login }}!
