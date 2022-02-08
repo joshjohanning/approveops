@@ -8,11 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     if: contains(github.event.comment.body, '/run-migration')
     steps:
-      - uses: jnwng/github-app-installation-token-action@v2
+      - uses: tibdex/github-app-token@v1
         id: get_installation_token
         with: 
           appId: 170284
-          installationId: 23023339
           privateKey: ${{ secrets.PRIVATE_KEY }}
         
       # if you don't use a GitHub app, remove the ${{ steps.get_installation_token.outputs.token }} below and create your own PAT secret
