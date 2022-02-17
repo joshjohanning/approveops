@@ -1,4 +1,4 @@
-name: 'ApproveOps: IssueOps with Approvals'
+name: 'ApproveOps - Approvals in IssueOps'
 description: 'IssueOps (ChatOps) workflows that require Approvals from someone in a designated GitHub team'
 
 branding:
@@ -10,12 +10,12 @@ inputs:
     description: "The name of the team in GitHub to check for the approval command; ie: approver-team"
     required: true
   app-private-key:
-    description: "Private key for the GitHub App that is installed on the repo; ie: ${{ secrets.PRIVATE_KEY }}"
+    description: "Private key for the GitHub App that is installed on the repo; ie: secrets.PRIVATE_KEY"
     required: true
   app-id: 
     description: "The GitHub App ID; ie: 170284"
     required: true
-  fail-if-not-found:
+  fail-if-approval-not-found:
     description: "Fail the action if the command is not found in the comments from someone in the approver team"
     required: true
     default: 'false'
@@ -34,7 +34,6 @@ runs:
         appId: ${{ inputs.app-id }}
         privateKey: ${{ inputs.app-private-key }}
       
-    # if you don't use a GitHub app, remove the ${{ steps.get_installation_token.outputs.token }} below and create your own PAT secret
     - id: check-approval
       name: check if there is an approve command from authorized party
       shell: bash
@@ -45,7 +44,7 @@ runs:
         approveCommand="/approve"
         comments=$(curl -sLX GET '${{ github.event.comment.issue_url }}/comments' \
           --header "Accept: application/vnd.github.v3+json" \
-          --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}")
+          --header "Authorization: Bearer ${{ steps.get_installation_token.outputs.token }}")
         authorized=false
         for comment in $(echo $comments | jq -r '.[] | @base64'); do
             body=$(echo $comment | base64 --decode | jq -r '.body')
@@ -88,7 +87,7 @@ runs:
           :tada:  You were able to run the migration because someone approved!! :tada:
 
     # if specified, exit with an error if approval is not found
-    - if: ${{ inputs.fail-if-not-found == 'true' && steps.check-approval.outputs.approved == 'false' }}
+    - if: ${{ inputs.fail-if-approval-not-found == 'true' && steps.check-approval.outputs.approved == 'false' }}
       shell: bash
       name: exit and error if not approved
       run: exit 1
