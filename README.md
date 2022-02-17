@@ -8,7 +8,7 @@ See the following guide on this action: https://josh-ops.com/posts/github-approv
 
 ```yml
 - name: ApproveOps - ApproveOps in IssueOps
-  uses: joshjohanning/ApproveOps@v1
+  uses: joshjohanning/approveops@v1
   id: check-approval
   with:
     app-id: 170284
