@@ -2,10 +2,6 @@
 
 Approvals in IssueOps
 
-![approveops](https://josh-ops.com/assets/screenshots/2022-02-08-github-approveops/approveops.png)
-
-![image](https://user-images.githubusercontent.com/19912012/154541967-db13932e-9727-4ee3-bc75-a1495445960b.png)
-
 See the following guide on this action: https://josh-ops.com/posts/github-approveops/
 
 ## Usage
@@ -31,3 +27,9 @@ See the following guide on this action: https://josh-ops.com/posts/github-approv
 1. Capture the `APP ID` to use as an input for this action
 
 See the following guide on creating a GitHub app: https://josh-ops.com/posts/github-apps/
+
+## Screenshots
+
+![approveops](https://user-images.githubusercontent.com/19912012/154542985-3cc2caef-bb90-4cb3-8853-b71d66bf16c7.png)
+
+![workflow](https://user-images.githubusercontent.com/19912012/154543171-33551f48-3026-4737-b8b7-7c427a7a8cd8.png)
