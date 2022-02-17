@@ -37,7 +37,8 @@ runs:
     - id: check-approval
       name: check if there is an approve command from authorized party
       shell: bash
-      run: | 
+      run: |
+        echo "checking for a /approve command in the comments from someone in the approver team"
         users=$(curl -sLX GET 'https://api.github.com/orgs/${{ github.repository_owner }}/teams/${{ inputs.team-name }}/members' \
           --header "Accept: application/vnd.github.v3+json" \
           --header "Authorization: Bearer ${{ steps.get_installation_token.outputs.token }}" | jq -c '.[].login')
