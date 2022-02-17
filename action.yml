@@ -1,5 +1,5 @@
 name: 'ApproveOps: IssueOps with Approvals'
-description: 'IssueOps workflows that require Approvals from someone in a designated GitHub team'
+description: 'IssueOps (ChatOps) workflows that require Approvals from someone in a designated GitHub team'
 
 branding:
   icon: "user-check"
