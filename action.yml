@@ -31,8 +31,8 @@ runs:
     - uses: tibdex/github-app-token@v1
       id: get_installation_token
       with: 
-        appId: ${{ inputs.app-id }}
-        privateKey: ${{ inputs.app-private-key }}
+        app_id: ${{ inputs.app-id }}
+        private_key: ${{ inputs.app-private-key }}
       
     - id: check-approval
       name: check if there is an approve command from authorized party
