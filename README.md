@@ -30,6 +30,6 @@ See the following guide on creating a GitHub app: https://josh-ops.com/posts/git
 
 ## Screenshots
 
-![approveops](https://user-images.githubusercontent.com/19912012/154542985-3cc2caef-bb90-4cb3-8853-b71d66bf16c7.png)
+![approveops](https://user-images.githubusercontent.com/19912012/154543675-57ff4e20-eea6-4f5d-bf2c-1607f68d4832.png)
 
 ![workflow](https://user-images.githubusercontent.com/19912012/154543171-33551f48-3026-4737-b8b7-7c427a7a8cd8.png)
