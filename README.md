@@ -2,6 +2,8 @@
 
 Approvals in IssueOps
 
+![approveops](https://josh-ops.com/assets/screenshots/2022-02-08-github-approveops/approveops.png)
+
 See the following guide on this action: https://josh-ops.com/posts/github-approveops/
 
 ## Usage
