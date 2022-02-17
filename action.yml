@@ -1,5 +1,5 @@
 name: 'ApproveOps: IssueOps with Approvals'
-description: 'Using GitHub Actions to build automation on top of Issues (IssueOps) with Approvals from someone in a designated GitHub team. See: https://josh-ops.com/posts/github-approveops'
+description: 'IssueOps workflows that require Approvals from someone in a designated GitHub team'
 
 branding:
   icon: "user-check"
