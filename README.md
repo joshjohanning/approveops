@@ -11,10 +11,10 @@ See the following guide on this action: https://josh-ops.com/posts/github-approv
   uses: joshjohanning/approveops@v1
   id: check-approval
   with:
-    app-id: 170284
-    app-private-key: ${{ secrets.PRIVATE_KEY }}
-    team-name: approver-team
-    fail-if-approval-not-found: false
+    app-id: 170284 # The GitHub App ID; ie: 170284
+    app-private-key: ${{ secrets.PRIVATE_KEY }} # Private key for the GitHub App that is installed on the repo; e.g.: ${{ secrets.PRIVATE_KEY }}
+    team-name: approver-team # The name of the team in GitHub to check for the approval command; e.g.: approver-team
+    fail-if-approval-not-found: false # Fail the action (show the action run as red) if the command is not found in the comments from someone in the approver team"
 ```
 
 ## Prerequisites
@@ -27,6 +27,10 @@ See the following guide on this action: https://josh-ops.com/posts/github-approv
 1. Capture the `APP ID` to use as an input for this action
 
 See the following guide on creating a GitHub app: https://josh-ops.com/posts/github-apps/
+
+Notes: 
+- A Personal Access Token (PAT) is not used since we want the comment to show as from a bot
+- The `github.token` is not used since the token can't provide hyperlinks for @ mentions since it doesn't have the scope for org teams, only repository data
 
 ## Screenshots
 

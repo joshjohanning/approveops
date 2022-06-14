@@ -7,16 +7,16 @@ branding:
 
 inputs:
   team-name:
-    description: "The name of the team in GitHub to check for the approval command; ie: approver-team"
+    description: "The name of the team in GitHub to check for the approval command; e.g.: approver-team"
     required: true
   app-private-key:
-    description: "Private key for the GitHub App that is installed on the repo; ie: secrets.PRIVATE_KEY"
+    description: "Private key for the GitHub App that is installed on the repo; e.g.: ${{ secrets.PRIVATE_KEY }}"
     required: true
   app-id: 
     description: "The GitHub App ID; ie: 170284"
     required: true
   fail-if-approval-not-found:
-    description: "Fail the action if the command is not found in the comments from someone in the approver team"
+    description: "Fail the action (i.e. show the action run as red) if the command is not found in the comments from someone in the approver team"
     required: true
     default: 'false'
 
