@@ -10,7 +10,7 @@ inputs:
     description: "The name of the team in GitHub to check for the approval command; e.g.: approver-team"
     required: true
   app-private-key:
-    description: "Private key for the GitHub App that is installed on the repo; e.g.: ${{ secrets.PRIVATE_KEY }}"
+    description: "Private key for the GitHub App that is installed on the repo; e.g.: secrets.PRIVATE_KEY"
     required: true
   app-id: 
     description: "The GitHub App ID; ie: 170284"
