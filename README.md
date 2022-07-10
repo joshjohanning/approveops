@@ -7,7 +7,7 @@ See the following guide on this action: https://josh-ops.com/posts/github-approv
 ## Usage
 
 ```yml
-- name: ApproveOps - ApproveOps in IssueOps
+- name: ApproveOps - Approvals in IssueOps
   uses: joshjohanning/approveops@v1
   id: check-approval
   with:
