@@ -1,4 +1,4 @@
-# ApproveOps
+# ApproveOps Action
 
 Approvals in IssueOps
 
