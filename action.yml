@@ -51,7 +51,7 @@ runs:
           --header "Accept: application/vnd.github.v3+json" \
           --header "Authorization: Bearer ${{ steps.get_installation_token.outputs.token }}" | jq -c '.[].login')
         approveCommand="/approve"
-        comments=$(curl -sLX GET '${{ github.event.comment.issue_url }}/comments' \
+        comments=$(curl -sLX GET '${{ github.event.comment.issue_url }}/comments?&per_page=100' \
           --header "Accept: application/vnd.github.v3+json" \
           --header "Authorization: Bearer ${{ steps.get_installation_token.outputs.token }}")
         authorized=false
@@ -59,7 +59,7 @@ runs:
             body=$(echo $comment | base64 --decode | jq -r '.body' | xargs -0)
             actor=$(echo $comment | base64 --decode | jq -r '.user.login')
             id=$(echo $comment | base64 --decode | jq -r '.id')
-            if [[ $body == $approveCommand ]]; then
+            if [[ $body == "$approveCommand" ]]; then
                 echo "Approval command found in comment id $id ..."
                 echo $users | grep -q $actor && echo "Found $actor in users" && authorized=true || echo "Not found $actor in users"
             else
