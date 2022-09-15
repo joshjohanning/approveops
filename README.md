@@ -15,6 +15,8 @@ See the following guide on this action: https://josh-ops.com/posts/github-approv
     app-private-key: ${{ secrets.PRIVATE_KEY }} # Private key for the GitHub App that is installed on the repo; e.g.: ${{ secrets.PRIVATE_KEY }}
     team-name: approver-team # The name of the team in GitHub to check for the approval command; e.g.: approver-team
     fail-if-approval-not-found: false # Fail the action (show the action run as red) if the command is not found in the comments from someone in the approver team"
+    post-successful-approval-comment: true # Boolean whether to post successful approval comment
+    successful-approval-comment: ':tada:  You were able to run the workflow because someone left an approval in the comments!! :tada:' # Comment to post if there is an approval is found
 ```
 
 ## Prerequisites

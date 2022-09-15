@@ -19,6 +19,14 @@ inputs:
     description: "Fail the action (i.e. show the action run as red) if the command is not found in the comments from someone in the approver team"
     required: true
     default: 'false'
+  post-successful-approval-comment:
+    description: "Boolean whether to post successful approval comment"
+    required: true
+    default: 'true'
+  successful-approval-comment:
+    description: "Comment to post if there is an approval is found"
+    required: true
+    default: ":tada:  You were able to run the workflow because someone left an approval in the comments!! :tada:"
 
 outputs:
   approved:
@@ -77,7 +85,7 @@ runs:
           :cry:  No one approved your run yet! Have someone from the @${{ github.repository_owner }}/${{ inputs.team-name }} team run `/approve` and then try your command again
           :no_entry_sign: :no_entry: Marking the workflow run as failed
 
-    - if: ${{ steps.check-approval.outputs.approved == 'true' }}
+    - if: ${{ steps.check-approval.outputs.approved == 'true' && inputs.post-successful-approval-comment == 'true' }}
       name: Create completed comment
       uses: peter-evans/create-or-update-comment@v1
       with:
@@ -85,7 +93,7 @@ runs:
         issue-number: ${{ github.event.issue.number }}
         body: |
           Hey, @${{ github.event.comment.user.login }}!
-          :tada:  You were able to run the migration because someone approved!! :tada:
+          ${{ inputs.successful-approval-comment }}
 
     # if specified, exit with an error if approval is not found
     - if: ${{ inputs.fail-if-approval-not-found == 'true' && steps.check-approval.outputs.approved == 'false' }}
