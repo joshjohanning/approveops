@@ -74,7 +74,7 @@ runs:
             echo "::error title=Not Approved::There is no /approve command in the comments from someone in the ${{ github.repository_owner }}/${{ inputs.team-name }} team"
         fi
 
-    - if: ${{ steps.check-approval.outputs.approved == 'false' }}
+    - if: ${{ steps.check-approval.outputs.approved == 'false' && inputs.fail-if-approval-not-found == 'true' }}
       name: Create completed comment
       uses: peter-evans/create-or-update-comment@v1
       with:
@@ -83,8 +83,19 @@ runs:
         body: |
           Hey, @${{ github.event.comment.user.login }}!
           :cry:  No one approved your run yet! Have someone from the @${{ github.repository_owner }}/${{ inputs.team-name }} team run `/approve` and then try your command again
-          :no_entry_sign: :no_entry: Marking the workflow run as failed
+          :no_entry_sign: :no_entry: Marking the [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }})  as failed
 
+    - if: ${{ steps.check-approval.outputs.approved == 'false' && inputs.fail-if-approval-not-found == 'false' }}
+      name: Create completed comment
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        token: ${{ steps.get_installation_token.outputs.token }}
+        issue-number: ${{ github.event.issue.number }}
+        body: |
+          Hey, @${{ github.event.comment.user.login }}!
+          :cry:  No one approved your run yet! Have someone from the @${{ github.repository_owner }}/${{ inputs.team-name }} team run `/approve` and then try your command again
+          :warning: :pause_button: The [workflow](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }} didn't run
+          
     - if: ${{ steps.check-approval.outputs.approved == 'true' && inputs.post-successful-approval-comment == 'true' }}
       name: Create completed comment
       uses: peter-evans/create-or-update-comment@v1
