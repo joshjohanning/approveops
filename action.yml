@@ -62,12 +62,13 @@ runs:
             if [[ $body == "$approveCommand" ]]; then
                 echo "Approval command found in comment id $id ..."
                 echo $users | grep -q $actor && echo "Found $actor in users" && authorized=true || echo "Not found $actor in users"
+                break
             else
                 echo "Approval command not found in comment id $id ..."
             fi
         done
         if $authorized; then
-            echo "Approval authorized"
+            echo "Approval authorized by $actor"
             echo "::set-output name=approved::true"
         else
             echo "Approval not found or not authorized"
