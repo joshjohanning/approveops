@@ -71,7 +71,7 @@ runs:
         else
             echo "Approval not found or not authorized"
             echo "::set-output name=approved::false"
-            if ${{ inputs.fail-if-approval-not-found }}; then
+            if !(${{ inputs.fail-if-approval-not-found }}); then
               echo "::notice title=Not Approved::There is no /approve command in the comments from someone in the ${{ github.repository_owner }}/${{ inputs.team-name }} team"
             fi
         fi
