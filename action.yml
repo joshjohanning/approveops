@@ -61,7 +61,7 @@ runs:
             id=$(echo $comment | base64 --decode | jq -r '.id')
             if [[ $body == "$approveCommand" ]]; then
                 echo "Approval command found in comment id $id ..."
-                echo $users | grep -q $actor && echo "Found $actor in users" && authorized=true || echo "Not found $actor in users"
+                echo $users | grep -q $actor && echo "Found $actor in team: ${{ inputs.team-name }}" && authorized=true || echo "Not found $actor in team: ${{ inputs.team-name }}"
                 break
             else
                 echo "Approval command not found in comment id $id ..."
