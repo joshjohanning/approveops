@@ -107,7 +107,9 @@ runs:
           ${{ inputs.successful-approval-comment }}
 
     # if specified, exit with an error if approval is not found
-    - if: ${{ inputs.fail-if-approval-not-found == 'true' && steps.check-approval.outputs.approved == 'false' }}
-      shell: bash
-      name: exit and error if not approved
-      run: exit 1
+    - name: exit and fail workflow if not approved
+      if: ${{ inputs.fail-if-approval-not-found == 'true' && steps.check-approval.outputs.approved == 'false' }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          core.setFailed("There is no /approve command in the comments from someone in the ${{ github.repository_owner }}/${{ inputs.team-name }} team");
