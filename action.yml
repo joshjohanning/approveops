@@ -19,6 +19,10 @@ inputs:
     description: "Fail the action (i.e. show the action run as red) if the command is not found in the comments from someone in the approver team"
     required: true
     default: 'false'
+  successful-approval-comment:
+    description: "Comment to post if there is an approval is found"
+    required: true
+    default: ":tada:  You were able to run the workflow because someone left an approval in the comments!! :tada:"
 
 outputs:
   approved:
@@ -85,7 +89,7 @@ runs:
         issue-number: ${{ github.event.issue.number }}
         body: |
           Hey, @${{ github.event.comment.user.login }}!
-          :tada:  You were able to run the migration because someone approved!! :tada:
+          ${{ inputs.successful-approval-comment }}
 
     # if specified, exit with an error if approval is not found
     - if: ${{ inputs.fail-if-approval-not-found == 'true' && steps.check-approval.outputs.approved == 'false' }}
