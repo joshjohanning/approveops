@@ -56,7 +56,7 @@ runs:
           --header "Authorization: Bearer ${{ steps.get_installation_token.outputs.token }}")
         authorized=false
         for comment in $(echo $comments | jq -r '.[] | @base64'); do
-            body=$(echo $comment | base64 --decode | jq -r '.body' | tr -d '\r\n' | tr -d ' ')
+            body=$(echo $comment | base64 --decode | jq -r '.body' | tr -d ' ' | tr -d '\r\n')
             actor=$(echo $comment | base64 --decode | jq -r '.user.login')
             id=$(echo $comment | base64 --decode | jq -r '.id')
             if [[ $body == "$approveCommand" ]]; then
