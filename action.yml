@@ -58,11 +58,12 @@ runs:
         for comment in $(echo $comments | jq -r '.[] | @base64'); do
             body=$(echo $comment | base64 --decode | jq -r '.body')
             actor=$(echo $comment | base64 --decode | jq -r '.user.login')
+            id=$(echo $comment | base64 --decode | jq -r '.id')
             if [[ $body == *"$approveCommand"* ]]; then
-                echo "Approve command found..."
+                echo "::debug::Approval command found in comment id $id ..."
                 echo $users | grep -q $actor && echo "Found $actor in users" && authorized=true || echo "Not found $actor in users"
             else
-                echo "Approve command not found..."
+                echo "::debug::Approval command not found in comment id $id ..."
             fi
         done
         if $authorized; then
