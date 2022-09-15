@@ -18,7 +18,7 @@ inputs:
   fail-if-approval-not-found:
     description: "Fail the action (i.e. show the action run as red) if the command is not found in the comments from someone in the approver team"
     required: true
-    default: 'false'
+    default: 'true'
   post-successful-approval-comment:
     description: "Boolean whether to post successful approval comment"
     required: true
@@ -94,7 +94,7 @@ runs:
         body: |
           Hey, @${{ github.event.comment.user.login }}!
           :cry:  No one approved your run yet! Have someone from the @${{ github.repository_owner }}/${{ inputs.team-name }} team run `/approve` and then try your command again
-          :warning: :pause_button: The [workflow](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }} didn't run
+          :warning: :pause_button: The [workflow](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) didn't run
           
     - if: ${{ steps.check-approval.outputs.approved == 'true' && inputs.post-successful-approval-comment == 'true' }}
       name: Create completed comment
