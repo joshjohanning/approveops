@@ -60,10 +60,10 @@ runs:
             actor=$(echo $comment | base64 --decode | jq -r '.user.login')
             id=$(echo $comment | base64 --decode | jq -r '.id')
             if [[ $body == "$approveCommand" ]]; then
-                echo "::debug::Approval command found in comment id $id ..."
+                echo "Approval command found in comment id $id ..."
                 echo $users | grep -q $actor && echo "Found $actor in users" && authorized=true || echo "Not found $actor in users"
             else
-                echo "::debug::Approval command not found in comment id $id ..."
+                echo "Approval command not found in comment id $id ..."
             fi
         done
         if $authorized; then
