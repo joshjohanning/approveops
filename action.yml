@@ -40,10 +40,10 @@ runs:
       shell: bash
       run: |
         # "checking for a /approve command in the comments from someone in the approver team"
-        users=$(gh api --paginate /orgs/${{ github.repository_owner }}/teams/${{ inputs.team-name }}/members' | jq -c '.[].login')
+        users=$(gh api --paginate '/orgs/${{ github.repository_owner }}/teams/${{ inputs.team-name }}/members' | jq -c '.[].login')
         approveCommand="/approve"
-        comments=$(gh api --paginate '${{ github.event.comment.issue_url }}/comments')
         authorized=false
+        comments=$(gh api --paginate '${{ github.event.comment.issue_url }}/comments')
         for comment in $(echo $comments | jq -r '.[] | @base64'); do
             body=$(echo $comment | base64 --decode | jq -r '.body' | tr -d ' ' | tr -d '\r\n')
             actor=$(echo $comment | base64 --decode | jq -r '.user.login')
