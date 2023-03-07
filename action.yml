@@ -76,7 +76,8 @@ runs:
         body: |
           Hey, @${{ github.event.comment.user.login }}!
           :cry:  No one approved your run yet! Have someone from the @${{ github.repository_owner }}/${{ inputs.team-name }} team run `/approve` and then try your command again
-          :no_entry_sign: :no_entry: Marking the [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) as failed
+
+          _:no_entry_sign: :no_entry: Marking the [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) as failed_
 
     - if: ${{ steps.check-approval.outputs.approved == 'false' && inputs.fail-if-approval-not-found == 'false' }}
       name: Create completed comment
@@ -87,7 +88,8 @@ runs:
         body: |
           Hey, @${{ github.event.comment.user.login }}!
           :cry:  No one approved your run yet! Have someone from the @${{ github.repository_owner }}/${{ inputs.team-name }} team run `/approve` and then try your command again
-          :warning: :pause_button: The [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) wasn't marked as failed
+
+          _:warning: :pause_button: See [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) for reference_
           
     - if: ${{ steps.check-approval.outputs.approved == 'true' && inputs.post-successful-approval-comment == 'true' }}
       name: Create completed comment
