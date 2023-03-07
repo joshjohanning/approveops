@@ -73,9 +73,9 @@ runs:
 
     - if: ${{ steps.check-approval.outputs.approved == 'false' && inputs.fail-if-approval-not-found == 'true' }}
       name: Create completed comment
-      uses: peter-evans/create-or-update-comment@v1
+      uses: peter-evans/create-or-update-comment@v2
       with:
-        token: ${{ inputs.app-private-key }}
+        token: ${{ inputs.token }}
         issue-number: ${{ github.event.issue.number }}
         body: |
           Hey, @${{ github.event.comment.user.login }}!
