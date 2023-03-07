@@ -7,22 +7,38 @@ See the following guide on this action: https://josh-ops.com/posts/github-approv
 ## Usage
 
 ```yml
-# get the app's installation token
-- uses: tibdex/github-app-token@v1
-  id: get_installation_token
-  with:
-    app_id: 170284
-    private_key: ${{ secrets.PRIVATE_KEY }}
+name: ApproveOps
+on:
+  issue_comment:
+    types: [created]
 
-- name: ApproveOps - Approvals in IssueOps
-  uses: joshjohanning/approveops@v1
-  id: check-approval
-  with:
-    token: ${{ steps.get_installation_token.outputs.token }} # use a github app token or a PAT
-    team-name: approver-team # The name of the team in GitHub to check for the approval command; e.g.: approver-team
-    fail-if-approval-not-found: false # Fail the action (show the action run as red) if the command is not found in the comments from someone in the approver team"
-    post-successful-approval-comment: true # Boolean whether to post successful approval comment
-    successful-approval-comment: ':tada:  You were able to run the workflow because someone left an approval in the comments!! :tada:' # Comment to post if there is an approval is found
+env:
+  approver_team_name: 'approver-team'
+  approval_command: '/approve'
+
+jobs:
+  approveops:
+    runs-on: ubuntu-latest
+    if: contains(github.event.comment.body, '/do-stuff')
+
+    steps:
+    # get the app's installation token
+    - uses: tibdex/github-app-token@v1
+      id: get_installation_token
+      with:
+        app_id: 170284
+        private_key: ${{ secrets.PRIVATE_KEY }}
+
+    - name: ApproveOps - Approvals in IssueOps
+      uses: joshjohanning/approveops@v2
+      id: check-approval
+      with:
+        token: ${{ steps.get_installation_token.outputs.token }} # use a github app token or a PAT
+        approve-command: '${{ env.approval_command }}' # Optional, defaults to '/approve', the command to look for in the comments
+        team-name: ${{ env.approver_team_name }} # The name of the team in GitHub to check for the approval command; e.g.: approver-team
+        fail-if-approval-not-found: false # Optional, defaults to true, fail the action (show the action run as red) if the command is not found in the comments from someone in the approver team"
+        post-successful-approval-comment: true # Optional, defaults to true, whether to post successful approval comment
+        successful-approval-comment: ':tada:  You were able to run the workflow because someone left an approval in the comments!! :tada:' # Optional, comment to post if an approval is found
 ```
 
 ## Prerequisites
@@ -56,13 +72,14 @@ Notes:
 
 Extracting the logic for generating a GitHub App's installation token so that you can either use an alternative action or method to retrieve the token or to be able use a GitHub PAT instead.
 
-Updated the following inputs:
+Added/removed the following inputs:
 
-| Input             | Action  | Required | Note                                                                                                                                                                  |
-|-------------------|---------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Input             | Action  | Required | Note                                                                                                                                                                   |
+|-------------------|---------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `token`           | Added   | Yes      | GitHub App installation token or PAT that has access to read+write comments and list the org team's membership; ie `${{ steps.get_installation_token.outputs.token }}` |
-| `app-id`          | Removed | Yes      | The app ID for a GitHub App ie `170284`                                                                                                                               |
-| `app-private-key` | Removed | Yes      | The private key for a GitHub App, ie: `${{ secrets.APP_PRIVATE_KEY }}`                                                                                    |
+| `approve-command` | Added   | No       | Optional, defaults to `/approve`, the command to look for in the comments                                                                                              |
+| `app-id`          | Removed | Yes      | The app ID for a GitHub App ie `170284`                                                                                                                                |
+| `app-private-key` | Removed | Yes      | The private key for a GitHub App, ie: `${{ secrets.APP_PRIVATE_KEY }}`                                                                                                 |
 
 Removed the following dependency:
 - `tibdex/github-app-token@v1`
