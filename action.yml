@@ -6,6 +6,10 @@ branding:
   color: "blue"
 
 inputs:
+  approve-command:
+    description: "The command to look for in the comments; e.g.: /approve"
+    required: true
+    default: '/approve'
   team-name:
     description: "The name of the team in GitHub to check for the approval command; e.g.: approver-team"
     required: true
@@ -39,9 +43,9 @@ runs:
         GH_TOKEN: ${{ inputs.token }}
       shell: bash
       run: |
-        # "checking for a /approve command in the comments from someone in the approver team"
+        # "checking for a ${{ inputs.approve-command }} command in the comments from someone in the approver team"
         users=$(gh api --paginate '/orgs/${{ github.repository_owner }}/teams/${{ inputs.team-name }}/members' | jq -c '.[].login')
-        approveCommand="/approve"
+        approveCommand="${{ inputs.approve-command }}"
         authorized=false
         comments=$(gh api --paginate '${{ github.event.comment.issue_url }}/comments')
         for comment in $(echo $comments | jq -r '.[] | @base64'); do
@@ -63,7 +67,7 @@ runs:
             echo "Approval not found or not authorized"
             echo "approved=false" >> $GITHUB_OUTPUT
             if !(${{ inputs.fail-if-approval-not-found }}); then
-              echo "::notice title=Not Approved::There is no /approve command in the comments from someone in the ${{ github.repository_owner }}/${{ inputs.team-name }} team"
+              echo "::notice title=Not Approved::There is no ${{ inputs.approve-command }} command in the comments from someone in the ${{ github.repository_owner }}/${{ inputs.team-name }} team"
             fi
         fi
 
@@ -75,7 +79,7 @@ runs:
         issue-number: ${{ github.event.issue.number }}
         body: |
           Hey, @${{ github.event.comment.user.login }}!
-          :cry:  No one approved your run yet! Have someone from the @${{ github.repository_owner }}/${{ inputs.team-name }} team run `/approve` and then try your command again
+          :cry:  No one approved your run yet! Have someone from the @${{ github.repository_owner }}/${{ inputs.team-name }} team run `${{ inputs.approve-command }}` and then try your command again
 
           _:no_entry_sign: :no_entry: Marking the [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) as failed_
 
@@ -87,7 +91,7 @@ runs:
         issue-number: ${{ github.event.issue.number }}
         body: |
           Hey, @${{ github.event.comment.user.login }}!
-          :cry:  No one approved your run yet! Have someone from the @${{ github.repository_owner }}/${{ inputs.team-name }} team run `/approve` and then try your command again
+          :cry:  No one approved your run yet! Have someone from the @${{ github.repository_owner }}/${{ inputs.team-name }} team run `${{ inputs.approve-command }}` and then try your command again
 
           _:warning: :pause_button: See [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) for reference_
           
@@ -107,4 +111,4 @@ runs:
       uses: actions/github-script@v6
       with:
         script: |
-          core.setFailed("There is no /approve command in the comments from someone in the ${{ github.repository_owner }}/${{ inputs.team-name }} team");
+          core.setFailed("There is no ${{ inputs.approve-command }} command in the comments from someone in the ${{ github.repository_owner }}/${{ inputs.team-name }} team");
