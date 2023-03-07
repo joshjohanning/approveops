@@ -73,7 +73,7 @@ runs:
 
     - if: ${{ steps.check-approval.outputs.approved == 'false' && inputs.fail-if-approval-not-found == 'true' }}
       name: Create completed comment
-      uses: peter-evans/create-or-update-comment@v2
+      uses: peter-evans/create-or-update-comment@v2.1.1
       with:
         token: ${{ inputs.token }}
         issue-number: ${{ github.event.issue.number }}
@@ -85,7 +85,7 @@ runs:
 
     - if: ${{ steps.check-approval.outputs.approved == 'false' && inputs.fail-if-approval-not-found == 'false' }}
       name: Create completed comment
-      uses: peter-evans/create-or-update-comment@v2
+      uses: peter-evans/create-or-update-comment@v2.1.1
       with:
         token: ${{ inputs.token }}
         issue-number: ${{ github.event.issue.number }}
@@ -97,7 +97,7 @@ runs:
           
     - if: ${{ steps.check-approval.outputs.approved == 'true' && inputs.post-successful-approval-comment == 'true' }}
       name: Create completed comment
-      uses: peter-evans/create-or-update-comment@v2
+      uses: peter-evans/create-or-update-comment@v2.1.1
       with:
         token: ${{ inputs.token }}
         issue-number: ${{ github.event.issue.number }}
@@ -108,7 +108,7 @@ runs:
     # if specified, exit with an error if approval is not found
     - name: exit and fail workflow if not approved
       if: ${{ inputs.fail-if-approval-not-found == 'true' && steps.check-approval.outputs.approved == 'false' }}
-      uses: actions/github-script@v6
+      uses: actions/github-script@v6.4.0
       with:
         script: |
           core.setFailed("There is no ${{ inputs.approve-command }} command in the comments from someone in the ${{ github.repository_owner }}/${{ inputs.team-name }} team");
