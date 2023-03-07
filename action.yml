@@ -35,16 +35,14 @@ runs:
   steps:
     - id: check-approval
       name: check if there is an approve command from authorized party
+      env:
+        GH_TOKEN: ${{ inputs.token }}
       shell: bash
       run: |
         # "checking for a /approve command in the comments from someone in the approver team"
-        users=$(curl -sLX GET 'https://api.github.com/orgs/${{ github.repository_owner }}/teams/${{ inputs.team-name }}/members' \
-          --header "Accept: application/vnd.github.v3+json" \
-          --header "Authorization: Bearer ${{ inputs.app-private-key }}" | jq -c '.[].login')
+        users=$(gh api --paginate /orgs/${{ github.repository_owner }}/teams/${{ inputs.team-name }}/members' | jq -c '.[].login')
         approveCommand="/approve"
-        comments=$(curl -sLX GET '${{ github.event.comment.issue_url }}/comments?&per_page=100' \
-          --header "Accept: application/vnd.github.v3+json" \
-          --header "Authorization: Bearer ${{ inputs.app-private-key }}")
+        comments=$(gh api --paginate '${{ github.event.comment.issue_url }}/comments')
         authorized=false
         for comment in $(echo $comments | jq -r '.[] | @base64'); do
             body=$(echo $comment | base64 --decode | jq -r '.body' | tr -d ' ' | tr -d '\r\n')
