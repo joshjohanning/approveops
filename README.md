@@ -76,10 +76,10 @@ Added/removed the following inputs:
 
 | Input             | Action  | Required | Note                                                                                                                                                                   |
 |-------------------|---------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `token`           | Added   | Yes      | GitHub App installation token or PAT that has access to read+write comments and list the org team's membership; ie `${{ steps.get_installation_token.outputs.token }}` |
+| `token`           | Added   | Yes      | GitHub App installation token or PAT that has access to read+write comments and list the team's membership, e.g.: `${{ steps.get_installation_token.outputs.token }}` |
 | `approve-command` | Added   | No       | Optional, defaults to `/approve`, the command to look for in the comments                                                                                              |
-| `app-id`          | Removed | Yes      | The app ID for a GitHub App ie `170284`                                                                                                                                |
-| `app-private-key` | Removed | Yes      | The private key for a GitHub App, ie: `${{ secrets.APP_PRIVATE_KEY }}`                                                                                                 |
+| `app-id`          | Removed | Yes      | The app ID for a GitHub App, e.g.: `170284`                                                                                                                                |
+| `app-private-key` | Removed | Yes      | The private key for a GitHub App, e.g.: `${{ secrets.APP_PRIVATE_KEY }}`                                                                                                 |
 
 Removed the following dependency:
 - `tibdex/github-app-token@v1`
