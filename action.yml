@@ -80,7 +80,7 @@ runs:
 
     - if: ${{ steps.check-approval.outputs.approved == 'false' && inputs.fail-if-approval-not-found == 'false' }}
       name: Create completed comment
-      uses: peter-evans/create-or-update-comment@v1
+      uses: peter-evans/create-or-update-comment@v2
       with:
         token: ${{ inputs.app-private-key }}
         issue-number: ${{ github.event.issue.number }}
@@ -91,7 +91,7 @@ runs:
           
     - if: ${{ steps.check-approval.outputs.approved == 'true' && inputs.post-successful-approval-comment == 'true' }}
       name: Create completed comment
-      uses: peter-evans/create-or-update-comment@v1
+      uses: peter-evans/create-or-update-comment@v2
       with:
         token: ${{ inputs.app-private-key }}
         issue-number: ${{ github.event.issue.number }}
