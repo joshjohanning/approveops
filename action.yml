@@ -6,14 +6,15 @@ branding:
   color: "blue"
 
 inputs:
+  approve-command:
+    description: "The command to look for in the comments; e.g.: /approve"
+    required: true
+    default: '/approve'
   team-name:
     description: "The name of the team in GitHub to check for the approval command; e.g.: approver-team"
     required: true
-  app-private-key:
-    description: "Private key for the GitHub App that is installed on the repo; e.g.: secrets.PRIVATE_KEY"
-    required: true
-  app-id: 
-    description: "The GitHub App ID; ie: 170284"
+  token:
+    description: "GitHub App installation token or PAT that has access to read the comments and check the org team's membership"
     required: true
   fail-if-approval-not-found:
     description: "Fail the action (i.e. show the action run as red) if the command is not found in the comments from someone in the approver team"
@@ -24,7 +25,7 @@ inputs:
     required: true
     default: 'true'
   successful-approval-comment:
-    description: "Comment to post if there is an approval is found"
+    description: "Comment to post if an approval is found"
     required: true
     default: ":tada:  You were able to run the workflow because someone left an approval in the comments!! :tada:"
 
@@ -32,29 +33,21 @@ outputs:
   approved:
     description: "Returns 'true' if the approval command was found in a comment from someone in the approver team, otherwise 'false'"
     value: ${{ steps.check-approval.outputs.approved }}
-    
+
 runs:
   using: "composite"
   steps:
-    - uses: tibdex/github-app-token@v1
-      id: get_installation_token
-      with: 
-        app_id: ${{ inputs.app-id }}
-        private_key: ${{ inputs.app-private-key }}
-      
     - id: check-approval
       name: check if there is an approve command from authorized party
+      env:
+        GH_TOKEN: ${{ inputs.token }}
       shell: bash
       run: |
-        # "checking for a /approve command in the comments from someone in the approver team"
-        users=$(curl -sLX GET 'https://api.github.com/orgs/${{ github.repository_owner }}/teams/${{ inputs.team-name }}/members' \
-          --header "Accept: application/vnd.github.v3+json" \
-          --header "Authorization: Bearer ${{ steps.get_installation_token.outputs.token }}" | jq -c '.[].login')
-        approveCommand="/approve"
-        comments=$(curl -sLX GET '${{ github.event.comment.issue_url }}/comments?&per_page=100' \
-          --header "Accept: application/vnd.github.v3+json" \
-          --header "Authorization: Bearer ${{ steps.get_installation_token.outputs.token }}")
+        # "checking for a ${{ inputs.approve-command }} command in the comments from someone in the approver team"
+        users=$(gh api --paginate '/orgs/${{ github.repository_owner }}/teams/${{ inputs.team-name }}/members' | jq -c '.[].login')
+        approveCommand="${{ inputs.approve-command }}"
         authorized=false
+        comments=$(gh api --paginate '${{ github.event.comment.issue_url }}/comments')
         for comment in $(echo $comments | jq -r '.[] | @base64'); do
             body=$(echo $comment | base64 --decode | jq -r '.body' | tr -d ' ' | tr -d '\r\n')
             actor=$(echo $comment | base64 --decode | jq -r '.user.login')
@@ -69,42 +62,44 @@ runs:
         done
         if $authorized; then
             echo "Approval authorized by $actor"
-            echo "::set-output name=approved::true"
+            echo "approved=true" >> $GITHUB_OUTPUT
         else
             echo "Approval not found or not authorized"
-            echo "::set-output name=approved::false"
+            echo "approved=false" >> $GITHUB_OUTPUT
             if !(${{ inputs.fail-if-approval-not-found }}); then
-              echo "::notice title=Not Approved::There is no /approve command in the comments from someone in the ${{ github.repository_owner }}/${{ inputs.team-name }} team"
+              echo "::notice title=Not Approved::There is no ${{ inputs.approve-command }} command in the comments from someone in the ${{ github.repository_owner }}/${{ inputs.team-name }} team"
             fi
         fi
 
     - if: ${{ steps.check-approval.outputs.approved == 'false' && inputs.fail-if-approval-not-found == 'true' }}
       name: Create completed comment
-      uses: peter-evans/create-or-update-comment@v1
+      uses: peter-evans/create-or-update-comment@v2.1.1
       with:
-        token: ${{ steps.get_installation_token.outputs.token }}
+        token: ${{ inputs.token }}
         issue-number: ${{ github.event.issue.number }}
         body: |
           Hey, @${{ github.event.comment.user.login }}!
-          :cry:  No one approved your run yet! Have someone from the @${{ github.repository_owner }}/${{ inputs.team-name }} team run `/approve` and then try your command again
-          :no_entry_sign: :no_entry: Marking the [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) as failed
+          :cry:  No one approved your run yet! Have someone from the @${{ github.repository_owner }}/${{ inputs.team-name }} team run `${{ inputs.approve-command }}` and then try your command again
+
+          _:no_entry_sign: :no_entry: Marking the [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) as failed_
 
     - if: ${{ steps.check-approval.outputs.approved == 'false' && inputs.fail-if-approval-not-found == 'false' }}
       name: Create completed comment
-      uses: peter-evans/create-or-update-comment@v1
+      uses: peter-evans/create-or-update-comment@v2.1.1
       with:
-        token: ${{ steps.get_installation_token.outputs.token }}
+        token: ${{ inputs.token }}
         issue-number: ${{ github.event.issue.number }}
         body: |
           Hey, @${{ github.event.comment.user.login }}!
-          :cry:  No one approved your run yet! Have someone from the @${{ github.repository_owner }}/${{ inputs.team-name }} team run `/approve` and then try your command again
-          :warning: :pause_button: The [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) wasn't marked as failed
+          :cry:  No one approved your run yet! Have someone from the @${{ github.repository_owner }}/${{ inputs.team-name }} team run `${{ inputs.approve-command }}` and then try your command again
+
+          _:warning: :pause_button: See [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) for reference_
           
     - if: ${{ steps.check-approval.outputs.approved == 'true' && inputs.post-successful-approval-comment == 'true' }}
       name: Create completed comment
-      uses: peter-evans/create-or-update-comment@v1
+      uses: peter-evans/create-or-update-comment@v2.1.1
       with:
-        token: ${{ steps.get_installation_token.outputs.token }}
+        token: ${{ inputs.token }}
         issue-number: ${{ github.event.issue.number }}
         body: |
           Hey, @${{ github.event.comment.user.login }}!
@@ -113,7 +108,7 @@ runs:
     # if specified, exit with an error if approval is not found
     - name: exit and fail workflow if not approved
       if: ${{ inputs.fail-if-approval-not-found == 'true' && steps.check-approval.outputs.approved == 'false' }}
-      uses: actions/github-script@v6
+      uses: actions/github-script@v6.4.0
       with:
         script: |
-          core.setFailed("There is no /approve command in the comments from someone in the ${{ github.repository_owner }}/${{ inputs.team-name }} team");
+          core.setFailed("There is no ${{ inputs.approve-command }} command in the comments from someone in the ${{ github.repository_owner }}/${{ inputs.team-name }} team");
