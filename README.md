@@ -12,10 +12,6 @@ on:
   issue_comment:
     types: [created]
 
-env:
-  approver_team_name: 'approver-team'
-  approval_command: '/approve'
-
 jobs:
   approveops:
     runs-on: ubuntu-latest
@@ -23,22 +19,22 @@ jobs:
 
     steps:
     # get the app's installation token
-    - uses: tibdex/github-app-token@v1
-      id: get_installation_token
+    - uses: actions/create-github-app-token@v1
+      id: app-token
       with:
-        app_id: 170284
-        private_key: ${{ secrets.PRIVATE_KEY }}
+        app-id: ${{ vars.APP_ID }}
+        private-key: ${{ secrets.PRIVATE_KEY }}
 
     - name: ApproveOps - Approvals in IssueOps
       uses: joshjohanning/approveops@v2
       id: check-approval
       with:
-        token: ${{ steps.get_installation_token.outputs.token }} # use a github app token or a PAT
-        approve-command: '${{ env.approval_command }}' # Optional, defaults to '/approve', the command to look for in the comments
-        team-name: ${{ env.approver_team_name }} # The name of the team in GitHub to check for the approval command; e.g.: approver-team
-        fail-if-approval-not-found: false # Optional, defaults to true, fail the action (show the action run as red) if the command is not found in the comments from someone in the approver team"
-        post-successful-approval-comment: true # Optional, defaults to true, whether to post successful approval comment
-        successful-approval-comment: ':tada:  You were able to run the workflow because someone left an approval in the comments!! :tada:' # Optional, comment to post if an approval is found
+        token: ${{ steps.app-token.outputs.token }} # use a github app token or a PAT
+        approve-command: '/approve' # defaults to '/approve', the command to look for in the comments
+        team-name: 'approver-team' # the name of the team in GitHub to check for the approval command; e.g.: approver-team
+        fail-if-approval-not-found: true # defaults to true, fail the action (show the action run as red) if the command is not found in the comments from someone in the approver team"
+        post-successful-approval-comment: false # defaults to true, whether to post successful approval comment
+        successful-approval-comment: ':tada:  You were able to run the workflow because someone left an approval in the comments!! :tada:' # Optional, only if post-successful-approval-comment is true, comment to post if an approval is found
 ```
 
 ## Prerequisites
@@ -50,7 +46,7 @@ jobs:
       - **read & write** on `Repository / Issues` to create the comment
       - **read-only** on `Organization / Members` to list the members of the team
     - Generate a `PRIVATE_KEY` for the GitHub app and store it as a repo or organizational secret
-    - Note the `APP ID` to use as an input for an action like `tibdex/github-app-token@v1`
+    - Note the `APP ID` to use as an input for an action like `actions/create-github-app-token@v1`
   - Classic PAT
     - If you are using a classic PAT, it will need the following scopes:
     - `repo` - to create the comment
