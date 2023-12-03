@@ -45,7 +45,14 @@ runs:
       shell: bash
       run: |
         # "checking for a ${{ inputs.approve-command }} command in the comments from someone in the ${{ inputs.team-name}} team"
-        users=$(gh api --paginate '/orgs/${{ github.repository_owner }}/teams/${{ inputs.team-name }}/members' | jq -c '.[].login')
+        # getting team membership"
+        echo "getting team membership for the team: @${{ github.repository_owner }}/${{ inputs.team-name }} ..."
+        users=$(gh api --paginate '${{ github.event.organization.url }}/teams/${{ inputs.team-name }}/members' --jq '.[].login')
+        if [ $? -ne 0 ]; then
+            echo "::error title=Team doesn't exist or token doesn't have access::The ${{ inputs.team-name }} team doesn't exist or the token doesn't have access to it"
+            exit 1
+        fi
+
         approveCommand="${{ inputs.approve-command }}"
         authorized=false
         comments=$(gh api --paginate '${{ github.event.comment.issue_url }}/comments')
