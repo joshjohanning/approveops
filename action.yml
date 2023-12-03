@@ -15,8 +15,8 @@ inputs:
     required: true
   token:
     description: "GitHub App installation token or PAT that has access to read the comments and check the org team's membership"
-    default: ${{ github.token }} # this doesn't allow tagging of the approval team; better to use GitHub App
     required: true
+    default: ${{ github.token }} # this doesn't allow tagging of the approval team; better to use GitHub App
   fail-if-approval-not-found:
     description: "Fail the action (i.e. show the action run as red) if the command is not found in the comments from someone in the approver team"
     required: true
@@ -64,7 +64,7 @@ runs:
 
         approveCommand="${{ inputs.approve-command }}"
         authorized=false
-        comments=$(gh api --paginate '${{ github.event.comment.issue_url }}/comments')
+        comments=$(gh api --paginate ${{ github.event.issue.comments_url }})
         for comment in $(echo $comments | jq -r '.[] | @base64'); do
             body=$(echo $comment | base64 --decode | jq -r '.body' | tr -d ' ' | tr -d '\r\n')
             actor=$(echo $comment | base64 --decode | jq -r '.user.login')
