@@ -39,6 +39,8 @@ jobs:
 
 ## Prerequisites
 
+### Team and Authentication
+
 1. Create a GitHub team and add at least one member
 2. Authentication options:
   - GitHub App
@@ -61,6 +63,13 @@ See the following guide on creating a GitHub app: https://josh-ops.com/posts/git
 Notes: 
 - A Personal Access Token (PAT) is not used since we want the comment to show as from a bot
 - The `github.token` is not used since the token can't provide hyperlinks for @ mentions since it doesn't have the scope for org teams, only repository data
+
+### Runner Software Requirements
+
+Required software installed on runner:
+
+  - [`gh` (GitHub CLI)](https://cli.github.com/)
+  - [`jq`](https://jqlang.github.io/jq/download/)
 
 ## Breaking Changes
 

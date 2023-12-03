@@ -45,6 +45,15 @@ runs:
       shell: bash
       run: |
         # "checking for a ${{ inputs.approve-command }} command in the comments from someone in the ${{ inputs.team-name}} team"
+
+        # prerequisite check
+        for cmd in gh jq; do
+          if ! command -v $cmd &> /dev/null; then
+            echo "::error title=${cmd} not installed::Could not find \`${cmd}\` on the runner"
+            exit 1
+          fi
+        done
+
         # getting team membership"
         echo "getting team membership for the team: @${{ github.repository_owner }}/${{ inputs.team-name }} ..."
         users=$(gh api --paginate '${{ github.event.organization.url }}/teams/${{ inputs.team-name }}/members' --jq '.[].login')
