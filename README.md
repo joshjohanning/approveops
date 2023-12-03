@@ -18,7 +18,6 @@ jobs:
     if: contains(github.event.comment.body, '/do-stuff')
 
     steps:
-    # get the app's installation token
     - uses: actions/create-github-app-token@v1
       id: app-token
       with:
@@ -29,13 +28,23 @@ jobs:
       uses: joshjohanning/approveops@v2
       id: check-approval
       with:
-        token: ${{ steps.app-token.outputs.token }} # use a github app token or a PAT
-        approve-command: '/approve' # defaults to '/approve', the command to look for in the comments
-        team-name: 'approver-team' # the name of the team in GitHub to check for the approval command; e.g.: approver-team
-        fail-if-approval-not-found: true # defaults to true, fail the action (show the action run as red) if the command is not found in the comments from someone in the approver team"
-        post-successful-approval-comment: false # defaults to true, whether to post successful approval comment
-        successful-approval-comment: ':tada:  You were able to run the workflow because someone left an approval in the comments!! :tada:' # Optional, only if post-successful-approval-comment is true, comment to post if an approval is found
+        token: ${{ steps.app-token.outputs.token }}
+        approve-command: '/approve'
+        team-name: 'approver-team'
+        fail-if-approval-not-found: true
+        post-successful-approval-comment: false
 ```
+
+### Inputs
+
+| Name | Description | Required | Default |
+| --- | --- | --- | --- |
+| `token` | GitHub App installation token or PAT that has access to read+write comments and list the team's membership | `true` | `''` |
+| `approve-command` | The approval command to look for in the comments | `true` | `/approve` |
+| `team-name` | The name of the team in GitHub to check for the approval command, e.g. `approver-team` | `true` | `''` |
+| `fail-if-approval-not-found` | Fail the action (show the action run as red) if the command is not found in the comments from someone in the approver team | `true` | `true` |
+| `post-successful-approval-comment` | Whether to post successful approval comment | `true` | `true` |
+| `successful-approval-comment` | Comment to post if an approval is found | `true` | `':tada:  You were able to run the workflow because someone left an approval in the comments!!'` |
 
 ## Prerequisites
 

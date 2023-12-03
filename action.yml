@@ -28,7 +28,7 @@ inputs:
   successful-approval-comment:
     description: "Comment to post if an approval is found"
     required: true
-    default: ":tada:  You were able to run the workflow because someone left an approval in the comments!! :tada:"
+    default: ":tada:  You were able to run the workflow because someone left an approval in the comments!!"
 
 outputs:
   approved:
