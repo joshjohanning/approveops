@@ -54,13 +54,9 @@ runs:
           fi
         done
 
-        # getting team membership"
+        # checking team and getting team membership"
         echo "getting team membership for the team: @${{ github.repository_owner }}/${{ inputs.team-name }} ..."
-        users=$(gh api --paginate '${{ github.event.organization.url }}/teams/${{ inputs.team-name }}/members' --jq '.[].login')
-        if [ $? -ne 0 ]; then
-            echo "::error title=Team doesn't exist or token doesn't have access::The ${{ inputs.team-name }} team doesn't exist or the token doesn't have access to it"
-            exit 1
-        fi
+        users=$(gh api --paginate '${{ github.event.organization.url }}/teams/${{ inputs.team-name }}/members' --jq '.[].login' 2> /dev/null) || { echo "::error title=Team doesn't exist or token doesn't have access::The ${{ inputs.team-name }} team doesn't exist or the token doesn't have access to it"; exit 1; }
 
         approveCommand="${{ inputs.approve-command }}"
         authorized=false
