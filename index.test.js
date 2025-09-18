@@ -157,5 +157,29 @@ describe('ApproveOps Action', () => {
       expect(mockCore.setOutput).toHaveBeenCalledWith('approved', 'false');
       expect(mockCore.setFailed).toHaveBeenCalled();
     });
+
+    test('should handle approval command with whitespace', async () => {
+      // Mock team members
+      mockOctokit.rest.teams.listMembersInOrg.mockResolvedValue({
+        data: [{ login: 'team-member' }]
+      });
+
+      // Mock comments with approval command surrounded by whitespace
+      mockOctokit.rest.issues.listComments.mockResolvedValue({
+        data: [
+          {
+            id: 1,
+            body: ' /approve \n',
+            user: { login: 'team-member' }
+          }
+        ]
+      });
+
+      mockOctokit.rest.issues.createComment.mockResolvedValue({});
+
+      await run();
+
+      expect(mockCore.setOutput).toHaveBeenCalledWith('approved', 'true');
+    });
   });
 });
