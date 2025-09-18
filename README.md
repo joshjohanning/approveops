@@ -75,10 +75,7 @@ Notes:
 
 ### Runner Software Requirements
 
-Required software installed on runner:
-
-  - [`gh` (GitHub CLI)](https://cli.github.com/)
-  - [`jq`](https://jqlang.github.io/jq/download/)
+No additional software requirements! This action now runs natively using Node.js and the GitHub REST API.
 
 ## Breaking Changes
 
