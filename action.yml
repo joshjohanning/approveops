@@ -84,35 +84,23 @@ runs:
             fi
         fi
 
-    - if: ${{ steps.check-approval.outputs.approved == 'false' && inputs.fail-if-approval-not-found == 'true' }}
+    - if: ${{ steps.check-approval.outputs.approved == 'false' }}
       name: Create completed comment
       uses: actions/github-script@v6
       with:
         github-token: ${{ inputs.token }}
         script: |
+          const isFailure = '${{ inputs.fail-if-approval-not-found }}' === 'true';
+          const statusLine = isFailure 
+            ? '_:no_entry_sign: :no_entry: Marking the [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) as failed_'
+            : '_:warning: :pause_button: See [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) for reference_';
+          
           let commentBody = `Hey, @${{ github.event.comment.user.login }}!
-          :cry: No one approved your run yet! Have someone from the @${context.repo.owner}/${{ inputs.team-name }} team comment \`${{ inputs.approve-command }}\` and then try your command again
+          :cry: No one approved your run yet! Have someone from the @${context.repo.owner}/${{ inputs.team-name }} team ${isFailure ? 'comment' : 'run'} \`${{ inputs.approve-command }}\` and then try your command again
 
-          _:no_entry_sign: :no_entry: Marking the [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) as failed_
-          `
-          await github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: commentBody
-          })
-
-    - if: ${{ steps.check-approval.outputs.approved == 'false' && inputs.fail-if-approval-not-found == 'false' }}
-      name: Create completed comment
-      uses: actions/github-script@v6
-      with:
-        github-token: ${{ inputs.token }}
-        script: |
-          let commentBody = `Hey, @${{ github.event.comment.user.login }}!
-          :cry:  No one approved your run yet! Have someone from the @${context.repo.owner}/${{ inputs.team-name }} team run \`${{ inputs.approve-command }}\` and then try your command again
-
-          _:warning: :pause_button: See [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) for reference_
-          `
+          ${statusLine}
+          `;
+          
           await github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
