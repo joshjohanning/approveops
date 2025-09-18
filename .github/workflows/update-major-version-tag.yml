@@ -8,6 +8,8 @@ on:
 jobs:
   update-majorver:
     name: Update Major Version Tag
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: nowactions/update-majorver@v1
