@@ -54,7 +54,7 @@ runs:
           fi
         done
 
-        # checking team and getting team membership"
+        # "checking team and getting team membership"
         echo "getting team membership for the team: @${{ github.repository_owner }}/${{ inputs.team-name }} ..."
         users=$(gh api --paginate '${{ github.event.organization.url }}/teams/${{ inputs.team-name }}/members' --jq '.[].login' 2> /dev/null) || { echo "::error title=Team doesn't exist or token doesn't have access::The ${{ inputs.team-name }} team doesn't exist or the token doesn't have access to it"; exit 1; }
 
@@ -65,9 +65,9 @@ runs:
             body=$(echo $comment | base64 --decode | jq -r '.body' | tr -d ' ' | tr -d '\r\n')
             actor=$(echo $comment | base64 --decode | jq -r '.user.login')
             id=$(echo $comment | base64 --decode | jq -r '.id')
-            if [[ $body == "$approveCommand" ]]; then
+            if [[ "$body" == "$approveCommand" ]]; then
                 echo "Approval command found in comment id $id ..."
-                echo $users | grep -q $actor && echo "Found $actor in team: ${{ inputs.team-name }}" && authorized=true || echo "Not found $actor in team: ${{ inputs.team-name }}"
+                echo $users | grep -q "$actor" && echo "Found $actor in team: ${{ inputs.team-name }}" && authorized=true || echo "Not found $actor in team: ${{ inputs.team-name }}"
                 break
             else
                 echo "Approval command not found in comment id $id ..."
