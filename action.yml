@@ -109,7 +109,7 @@ runs:
         github-token: ${{ inputs.token }}
         script: |
           let commentBody = `Hey, @${{ github.event.comment.user.login }}!
-          :cry:  No one approved your run yet! Have someone from the @${context.repo.owner}/${{ inputs.team-name }} team run `${{ inputs.approve-command }}` and then try your command again
+          :cry:  No one approved your run yet! Have someone from the @${context.repo.owner}/${{ inputs.team-name }} team run \`${{ inputs.approve-command }}\` and then try your command again
 
           _:warning: :pause_button: See [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) for reference_
           `
