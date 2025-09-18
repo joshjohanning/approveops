@@ -86,7 +86,7 @@ runs:
 
     - if: ${{ steps.check-approval.outputs.approved == 'false' }}
       name: Create completed comment
-      uses: actions/github-script@v6
+      uses: actions/github-script@v8
       with:
         github-token: ${{ inputs.token }}
         script: |
@@ -110,7 +110,7 @@ runs:
 
     - if: ${{ steps.check-approval.outputs.approved == 'true' && inputs.post-successful-approval-comment == 'true' }}
       name: Create completed comment
-      uses: actions/github-script@v6
+      uses: actions/github-script@v8
       with:
         github-token: ${{ inputs.token }}
         script: |
@@ -127,7 +127,7 @@ runs:
     # if specified, exit with an error if approval is not found
     - name: exit and fail workflow if not approved
       if: ${{ inputs.fail-if-approval-not-found == 'true' && steps.check-approval.outputs.approved == 'false' }}
-      uses: actions/github-script@v6
+      uses: actions/github-script@v8
       with:
         script: |
           core.setFailed(`There is no ${{ inputs.approve-command }} command in the comments from someone in the @${context.repo.owner}/${{ inputs.team-name }} team`);
