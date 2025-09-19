@@ -1,5 +1,5 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
+const core = require("@actions/core");
+const github = require("@actions/github");
 
 /**
  * Get all comments for an issue with pagination
@@ -19,7 +19,7 @@ async function getAllComments(octokit, context) {
       repo: context.repo.repo,
       issue_number: context.issue.number,
       per_page: perPage,
-      page: page
+      page: page,
     });
 
     comments.push(...response.data);
@@ -52,10 +52,10 @@ async function getTeamMembers(octokit, org, teamSlug) {
         org: org,
         team_slug: teamSlug,
         per_page: perPage,
-        page: page
+        page: page,
       });
 
-      members.push(...response.data.map(member => member.login));
+      members.push(...response.data.map((member) => member.login));
 
       if (response.data.length < perPage) {
         break; // No more pages
@@ -63,7 +63,9 @@ async function getTeamMembers(octokit, org, teamSlug) {
       page++;
     } catch (error) {
       if (error.status === 404) {
-        throw new Error(`Team '${teamSlug}' doesn't exist or the token doesn't have access to it`);
+        throw new Error(
+          `Team '${teamSlug}' doesn't exist or the token doesn't have access to it`,
+        );
       }
       throw error;
     }
@@ -83,7 +85,7 @@ async function postComment(octokit, context, body) {
     owner: context.repo.owner,
     repo: context.repo.repo,
     issue_number: context.issue.number,
-    body: body
+    body: body,
   });
 }
 
@@ -93,22 +95,37 @@ async function postComment(octokit, context, body) {
 async function run() {
   try {
     // Get inputs
-    const token = core.getInput('token', { required: true });
-    const approveCommand = core.getInput('approve-command', { required: true });
-    const teamName = core.getInput('team-name', { required: true });
-    const failIfApprovalNotFound = core.getInput('fail-if-approval-not-found', { required: true }) === 'true';
-    const postSuccessfulApprovalComment = core.getInput('post-successful-approval-comment', { required: true }) === 'true';
-    const successfulApprovalComment = core.getInput('successful-approval-comment', { required: true });
+    const token = core.getInput("token", { required: true });
+    const approveCommand = core.getInput("approve-command", { required: true });
+    const teamName = core.getInput("team-name", { required: true });
+    const failIfApprovalNotFound =
+      core.getInput("fail-if-approval-not-found", { required: true }) ===
+      "true";
+    const postSuccessfulApprovalComment =
+      core.getInput("post-successful-approval-comment", { required: true }) ===
+      "true";
+    const successfulApprovalComment = core.getInput(
+      "successful-approval-comment",
+      { required: true },
+    );
 
     // Initialize Octokit
     const octokit = github.getOctokit(token);
     const context = github.context;
 
-    core.info(`Checking for '${approveCommand}' command in comments from someone in the '${teamName}' team`);
+    core.info(
+      `Checking for '${approveCommand}' command in comments from someone in the '${teamName}' team`,
+    );
 
     // Get team membership
-    core.info(`Getting team membership for: @${context.repo.owner}/${teamName}...`);
-    const teamMembers = await getTeamMembers(octokit, context.repo.owner, teamName);
+    core.info(
+      `Getting team membership for: @${context.repo.owner}/${teamName}...`,
+    );
+    const teamMembers = await getTeamMembers(
+      octokit,
+      context.repo.owner,
+      teamName,
+    );
     core.info(`Found ${teamMembers.length} team members`);
 
     // Get all comments
@@ -120,7 +137,7 @@ async function run() {
     let approverActor = null;
 
     for (const comment of comments) {
-      const body = comment.body.replace(/\s/g, '').replace(/\r?\n/g, ''); // Remove spaces and newlines
+      const body = comment.body.replace(/\s/g, "").replace(/\r?\n/g, ""); // Remove spaces and newlines
       const actor = comment.user.login;
       const commentId = comment.id;
 
@@ -140,27 +157,27 @@ async function run() {
     }
 
     // Set output
-    core.setOutput('approved', authorized.toString());
+    core.setOutput("approved", authorized.toString());
 
     if (authorized) {
       core.info(`Approval authorized by ${approverActor}`);
-      
+
       // Post successful approval comment if requested
       if (postSuccessfulApprovalComment) {
         const commentBody = `Hey, @${context.payload.comment.user.login}!\n${successfulApprovalComment}`;
         await postComment(octokit, context, commentBody);
       }
     } else {
-      core.info('Approval not found or not authorized');
-      
+      core.info("Approval not found or not authorized");
+
       // Post rejection comment
       const isFailure = failIfApprovalNotFound;
-      const statusLine = isFailure 
+      const statusLine = isFailure
         ? `_:no_entry_sign: :no_entry: Marking the [workflow run](${context.payload.repository.html_url}/actions/runs/${context.runId}) as failed_`
         : `_:warning: :pause_button: See [workflow run](${context.payload.repository.html_url}/actions/runs/${context.runId}) for reference_`;
-      
+
       const commentBody = `Hey, @${context.payload.comment.user.login}!
-:cry: No one approved your run yet! Have someone from the @${context.repo.owner}/${teamName} team ${isFailure ? 'comment' : 'run'} \`${approveCommand}\` and then try your command again
+:cry: No one approved your run yet! Have someone from the @${context.repo.owner}/${teamName} team ${isFailure ? "comment" : "run"} \`${approveCommand}\` and then try your command again
 
 ${statusLine}`;
 
@@ -168,12 +185,15 @@ ${statusLine}`;
 
       // Set notice or fail
       if (!failIfApprovalNotFound) {
-        core.notice(`There is no ${approveCommand} command in the comments from someone in the @${context.repo.owner}/${teamName} team`);
+        core.notice(
+          `There is no ${approveCommand} command in the comments from someone in the @${context.repo.owner}/${teamName} team`,
+        );
       } else {
-        core.setFailed(`There is no ${approveCommand} command in the comments from someone in the @${context.repo.owner}/${teamName} team`);
+        core.setFailed(
+          `There is no ${approveCommand} command in the comments from someone in the @${context.repo.owner}/${teamName} team`,
+        );
       }
     }
-
   } catch (error) {
     core.setFailed(error.message);
   }
@@ -184,7 +204,7 @@ module.exports = {
   getAllComments,
   getTeamMembers,
   postComment,
-  run
+  run,
 };
 
 // Run the action if this file is executed directly

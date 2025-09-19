@@ -1,5 +1,5 @@
-name: 'ApproveOps - Approvals in IssueOps'
-description: 'IssueOps (ChatOps) workflows that require Approvals from someone in a designated GitHub team'
+name: "ApproveOps - Approvals in IssueOps"
+description: "IssueOps (ChatOps) workflows that require Approvals from someone in a designated GitHub team"
 
 branding:
   icon: "user-check"
@@ -9,7 +9,7 @@ inputs:
   approve-command:
     description: "The command to look for in the comments; e.g.: /approve"
     required: true
-    default: '/approve'
+    default: "/approve"
   team-name:
     description: "The name of the team in GitHub to check for the approval command; e.g.: approver-team"
     required: true
@@ -20,11 +20,11 @@ inputs:
   fail-if-approval-not-found:
     description: "Fail the action (i.e. show the action run as red) if the command is not found in the comments from someone in the approver team"
     required: true
-    default: 'true'
+    default: "true"
   post-successful-approval-comment:
     description: "Boolean whether to post successful approval comment"
     required: true
-    default: 'true'
+    default: "true"
   successful-approval-comment:
     description: "Comment to post if an approval is found"
     required: true
@@ -35,5 +35,5 @@ outputs:
     description: "Returns 'true' if the approval command was found in a comment from someone in the approver team, otherwise 'false'"
 
 runs:
-  using: 'node20'
-  main: 'dist/index.js'
+  using: "node20"
+  main: "dist/index.js"
