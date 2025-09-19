@@ -11,12 +11,12 @@ const mockCore = {
 const mockGithub = {
   getOctokit: jest.fn(),
   context: {
-    repo: { owner: "test-owner", repo: "test-repo" },
+    repo: { owner: 'test-owner', repo: 'test-repo' },
     issue: { number: 1 },
-    runId: "12345",
+    runId: '12345',
     payload: {
-      comment: { user: { login: "test-user" } },
-      repository: { html_url: "https://github.com/test-owner/test-repo" },
+      comment: { user: { login: 'test-user' } },
+      repository: { html_url: 'https://github.com/test-owner/test-repo' },
     },
   },
 };
@@ -35,12 +35,12 @@ const mockOctokit = {
 };
 
 // Mock the modules before requiring the main module
-jest.mock("@actions/core", () => mockCore);
-jest.mock("@actions/github", () => mockGithub);
+jest.mock('@actions/core', () => mockCore);
+jest.mock('@actions/github', () => mockGithub);
 
-const { getAllComments, getTeamMembers, run } = require("./index");
+const { getAllComments, getTeamMembers, run } = require('./index');
 
-describe("ApproveOps Action", () => {
+describe('ApproveOps Action', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockGithub.getOctokit.mockReturnValue(mockOctokit);
@@ -48,21 +48,21 @@ describe("ApproveOps Action", () => {
     // Set default inputs
     mockCore.getInput.mockImplementation((name) => {
       const inputs = {
-        token: "test-token",
-        "approve-command": "/approve",
-        "team-name": "approver-team",
-        "fail-if-approval-not-found": "true",
-        "post-successful-approval-comment": "true",
-        "successful-approval-comment": ":tada: Approved!",
+        token: 'test-token',
+        'approve-command': '/approve',
+        'team-name': 'approver-team',
+        'fail-if-approval-not-found': 'true',
+        'post-successful-approval-comment': 'true',
+        'successful-approval-comment': ':tada: Approved!',
       };
-      return inputs[name] || "";
+      return inputs[name] || '';
     });
   });
 
-  describe("getAllComments", () => {
-    test("should get all comments with pagination", async () => {
+  describe('getAllComments', () => {
+    test('should get all comments with pagination', async () => {
       const context = {
-        repo: { owner: "test-owner", repo: "test-repo" },
+        repo: { owner: 'test-owner', repo: 'test-repo' },
         issue: { number: 1 },
       };
 
@@ -70,10 +70,10 @@ describe("ApproveOps Action", () => {
         .mockResolvedValueOnce({
           data: Array(100)
             .fill()
-            .map((_, i) => ({ id: i + 1, body: "comment" })),
+            .map((_, i) => ({ id: i + 1, body: 'comment' })),
         })
         .mockResolvedValueOnce({
-          data: [{ id: 101, body: "last comment" }],
+          data: [{ id: 101, body: 'last comment' }],
         });
 
       const comments = await getAllComments(mockOctokit, context);
@@ -83,8 +83,8 @@ describe("ApproveOps Action", () => {
     });
   });
 
-  describe("getTeamMembers", () => {
-    test("should get team members with pagination", async () => {
+  describe('getTeamMembers', () => {
+    test('should get team members with pagination', async () => {
       mockOctokit.rest.teams.listMembersInOrg
         .mockResolvedValueOnce({
           data: Array(100)
@@ -92,35 +92,35 @@ describe("ApproveOps Action", () => {
             .map((_, i) => ({ login: `user${i}` })),
         })
         .mockResolvedValueOnce({
-          data: [{ login: "lastuser" }],
+          data: [{ login: 'lastuser' }],
         });
 
       const members = await getTeamMembers(
         mockOctokit,
-        "test-org",
-        "test-team",
+        'test-org',
+        'test-team',
       );
 
       expect(members).toHaveLength(101);
       expect(mockOctokit.rest.teams.listMembersInOrg).toHaveBeenCalledTimes(2);
     });
 
-    test("should throw error when team not found", async () => {
+    test('should throw error when team not found', async () => {
       mockOctokit.rest.teams.listMembersInOrg.mockRejectedValue({
         status: 404,
       });
 
       await expect(
-        getTeamMembers(mockOctokit, "test-org", "nonexistent-team"),
-      ).rejects.toThrow("Team 'nonexistent-team' doesn't exist");
+        getTeamMembers(mockOctokit, 'test-org', 'nonexistent-team'),
+      ).rejects.toThrow('Team \'nonexistent-team\' doesn\'t exist');
     });
   });
 
-  describe("run - integration", () => {
-    test("should approve when team member comments with approval command", async () => {
+  describe('run - integration', () => {
+    test('should approve when team member comments with approval command', async () => {
       // Mock team members
       mockOctokit.rest.teams.listMembersInOrg.mockResolvedValue({
-        data: [{ login: "team-member" }],
+        data: [{ login: 'team-member' }],
       });
 
       // Mock comments with approval
@@ -128,8 +128,8 @@ describe("ApproveOps Action", () => {
         data: [
           {
             id: 1,
-            body: "/approve",
-            user: { login: "team-member" },
+            body: '/approve',
+            user: { login: 'team-member' },
           },
         ],
       });
@@ -138,14 +138,14 @@ describe("ApproveOps Action", () => {
 
       await run();
 
-      expect(mockCore.setOutput).toHaveBeenCalledWith("approved", "true");
+      expect(mockCore.setOutput).toHaveBeenCalledWith('approved', 'true');
       expect(mockOctokit.rest.issues.createComment).toHaveBeenCalled();
     });
 
-    test("should not approve when non-team member comments with approval command", async () => {
+    test('should not approve when non-team member comments with approval command', async () => {
       // Mock team members
       mockOctokit.rest.teams.listMembersInOrg.mockResolvedValue({
-        data: [{ login: "team-member" }],
+        data: [{ login: 'team-member' }],
       });
 
       // Mock comments with approval from non-team member
@@ -153,8 +153,8 @@ describe("ApproveOps Action", () => {
         data: [
           {
             id: 1,
-            body: "/approve",
-            user: { login: "non-team-member" },
+            body: '/approve',
+            user: { login: 'non-team-member' },
           },
         ],
       });
@@ -163,14 +163,14 @@ describe("ApproveOps Action", () => {
 
       await run();
 
-      expect(mockCore.setOutput).toHaveBeenCalledWith("approved", "false");
+      expect(mockCore.setOutput).toHaveBeenCalledWith('approved', 'false');
       expect(mockCore.setFailed).toHaveBeenCalled();
     });
 
-    test("should handle approval command with whitespace", async () => {
+    test('should handle approval command with whitespace', async () => {
       // Mock team members
       mockOctokit.rest.teams.listMembersInOrg.mockResolvedValue({
-        data: [{ login: "team-member" }],
+        data: [{ login: 'team-member' }],
       });
 
       // Mock comments with approval command surrounded by whitespace
@@ -178,8 +178,8 @@ describe("ApproveOps Action", () => {
         data: [
           {
             id: 1,
-            body: " /approve \n",
-            user: { login: "team-member" },
+            body: ' /approve \n',
+            user: { login: 'team-member' },
           },
         ],
       });
@@ -188,7 +188,7 @@ describe("ApproveOps Action", () => {
 
       await run();
 
-      expect(mockCore.setOutput).toHaveBeenCalledWith("approved", "true");
+      expect(mockCore.setOutput).toHaveBeenCalledWith('approved', 'true');
     });
   });
 });
