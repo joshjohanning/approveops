@@ -1,4 +1,4 @@
-name: "Publish GitHub Action"
+name: 'Publish GitHub Action'
 on:
   workflow_dispatch:
   push:

@@ -29,8 +29,8 @@ jobs:
         id: check-approval
         with:
           token: ${{ steps.app-token.outputs.token }}
-          approve-command: "/approve"
-          team-name: "approver-team"
+          approve-command: '/approve'
+          team-name: 'approver-team'
           fail-if-approval-not-found: true
           post-successful-approval-comment: false
 ```

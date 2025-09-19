@@ -20,12 +20,13 @@ rules:
   quotes:
     - error
     - single
+    - allowTemplateLiterals: true
   semi:
     - error
     - always
   no-unused-vars:
     - error
-    - argsIgnorePattern: "^_"
+    - argsIgnorePattern: '^_'
   no-console: warn
   prefer-const: error
   no-var: error
