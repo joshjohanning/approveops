@@ -1,5 +1,5 @@
-const core = require("@actions/core");
-const github = require("@actions/github");
+const core = require('@actions/core');
+const github = require('@actions/github');
 
 /**
  * Get all comments for an issue with pagination
@@ -95,17 +95,17 @@ async function postComment(octokit, context, body) {
 async function run() {
   try {
     // Get inputs
-    const token = core.getInput("token", { required: true });
-    const approveCommand = core.getInput("approve-command", { required: true });
-    const teamName = core.getInput("team-name", { required: true });
+    const token = core.getInput('token', { required: true });
+    const approveCommand = core.getInput('approve-command', { required: true });
+    const teamName = core.getInput('team-name', { required: true });
     const failIfApprovalNotFound =
-      core.getInput("fail-if-approval-not-found", { required: true }) ===
-      "true";
+      core.getInput('fail-if-approval-not-found', { required: true }) ===
+      'true';
     const postSuccessfulApprovalComment =
-      core.getInput("post-successful-approval-comment", { required: true }) ===
-      "true";
+      core.getInput('post-successful-approval-comment', { required: true }) ===
+      'true';
     const successfulApprovalComment = core.getInput(
-      "successful-approval-comment",
+      'successful-approval-comment',
       { required: true },
     );
 
@@ -137,7 +137,7 @@ async function run() {
     let approverActor = null;
 
     for (const comment of comments) {
-      const body = comment.body.replace(/\s/g, "").replace(/\r?\n/g, ""); // Remove spaces and newlines
+      const body = comment.body.replace(/\s/g, '').replace(/\r?\n/g, ''); // Remove spaces and newlines
       const actor = comment.user.login;
       const commentId = comment.id;
 
@@ -157,7 +157,7 @@ async function run() {
     }
 
     // Set output
-    core.setOutput("approved", authorized.toString());
+    core.setOutput('approved', authorized.toString());
 
     if (authorized) {
       core.info(`Approval authorized by ${approverActor}`);
@@ -168,7 +168,7 @@ async function run() {
         await postComment(octokit, context, commentBody);
       }
     } else {
-      core.info("Approval not found or not authorized");
+      core.info('Approval not found or not authorized');
 
       // Post rejection comment
       const isFailure = failIfApprovalNotFound;
@@ -177,7 +177,7 @@ async function run() {
         : `_:warning: :pause_button: See [workflow run](${context.payload.repository.html_url}/actions/runs/${context.runId}) for reference_`;
 
       const commentBody = `Hey, @${context.payload.comment.user.login}!
-:cry: No one approved your run yet! Have someone from the @${context.repo.owner}/${teamName} team ${isFailure ? "comment" : "run"} \`${approveCommand}\` and then try your command again
+:cry: No one approved your run yet! Have someone from the @${context.repo.owner}/${teamName} team ${isFailure ? 'comment' : 'run'} \`${approveCommand}\` and then try your command again
 
 ${statusLine}`;
 
