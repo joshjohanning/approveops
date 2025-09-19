@@ -2,132 +2,38 @@ name: 'ApproveOps - Approvals in IssueOps'
 description: 'IssueOps (ChatOps) workflows that require Approvals from someone in a designated GitHub team'
 
 branding:
-  icon: "user-check"
-  color: "blue"
+  icon: 'user-check'
+  color: 'blue'
 
 inputs:
   approve-command:
-    description: "The command to look for in the comments; e.g.: /approve"
+    description: 'The command to look for in the comments; e.g.: /approve'
     required: true
     default: '/approve'
   team-name:
-    description: "The name of the team in GitHub to check for the approval command; e.g.: approver-team"
+    description: 'The name of the team in GitHub to check for the approval command; e.g.: approver-team'
     required: true
   token:
     description: "GitHub App installation token or PAT that has access to read the comments and check the org team's membership"
     required: true
     default: ${{ github.token }} # this doesn't allow tagging of the approval team; better to use GitHub App
   fail-if-approval-not-found:
-    description: "Fail the action (i.e. show the action run as red) if the command is not found in the comments from someone in the approver team"
+    description: 'Fail the action (i.e. show the action run as red) if the command is not found in the comments from someone in the approver team'
     required: true
     default: 'true'
   post-successful-approval-comment:
-    description: "Boolean whether to post successful approval comment"
+    description: 'Boolean whether to post successful approval comment'
     required: true
     default: 'true'
   successful-approval-comment:
-    description: "Comment to post if an approval is found"
+    description: 'Comment to post if an approval is found'
     required: true
-    default: ":tada:  You were able to run the workflow because someone left an approval in the comments!!"
+    default: ':tada:  You were able to run the workflow because someone left an approval in the comments!!'
 
 outputs:
   approved:
     description: "Returns 'true' if the approval command was found in a comment from someone in the approver team, otherwise 'false'"
-    value: ${{ steps.check-approval.outputs.approved }}
 
 runs:
-  using: "composite"
-  steps:
-    - id: check-approval
-      name: check if there is an approve command from authorized party
-      env:
-        GH_TOKEN: ${{ inputs.token }}
-      shell: bash
-      run: |
-        # "checking for a ${{ inputs.approve-command }} command in the comments from someone in the ${{ inputs.team-name}} team"
-
-        # prerequisite check
-        for cmd in gh jq; do
-          if ! command -v $cmd &> /dev/null; then
-            echo "::error title=${cmd} not installed::Could not find \`${cmd}\` on the runner"
-            exit 1
-          fi
-        done
-
-        # "checking team and getting team membership"
-        echo "getting team membership for the team: @${{ github.repository_owner }}/${{ inputs.team-name }} ..."
-        users=$(gh api --paginate '${{ github.event.organization.url }}/teams/${{ inputs.team-name }}/members' --jq '.[].login' 2> /dev/null) || { echo "::error title=Team doesn't exist or token doesn't have access::The ${{ inputs.team-name }} team doesn't exist or the token doesn't have access to it"; exit 1; }
-
-        approveCommand="${{ inputs.approve-command }}"
-        authorized=false
-        comments=$(gh api --paginate ${{ github.event.issue.comments_url }})
-        for comment in $(echo $comments | jq -r '.[] | @base64'); do
-            body=$(echo $comment | base64 --decode | jq -r '.body' | tr -d ' ' | tr -d '\r\n')
-            actor=$(echo $comment | base64 --decode | jq -r '.user.login')
-            id=$(echo $comment | base64 --decode | jq -r '.id')
-            if [[ "$body" == "$approveCommand" ]]; then
-                echo "Approval command found in comment id $id ..."
-                echo $users | grep -q "$actor" && echo "Found $actor in team: ${{ inputs.team-name }}" && authorized=true || echo "Not found $actor in team: ${{ inputs.team-name }}"
-                break
-            else
-                echo "Approval command not found in comment id $id ..."
-            fi
-        done
-        if $authorized; then
-            echo "Approval authorized by $actor"
-            echo "approved=true" >> $GITHUB_OUTPUT
-        else
-            echo "Approval not found or not authorized"
-            echo "approved=false" >> $GITHUB_OUTPUT
-            if !(${{ inputs.fail-if-approval-not-found }}); then
-              echo "::notice title=Not Approved::There is no ${{ inputs.approve-command }} command in the comments from someone in the @${{ github.repository_owner }}/${{ inputs.team-name }} team"
-            fi
-        fi
-
-    - if: ${{ steps.check-approval.outputs.approved == 'false' }}
-      name: Create completed comment
-      uses: actions/github-script@v6
-      with:
-        github-token: ${{ inputs.token }}
-        script: |
-          const isFailure = '${{ inputs.fail-if-approval-not-found }}' === 'true';
-          const statusLine = isFailure 
-            ? '_:no_entry_sign: :no_entry: Marking the [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) as failed_'
-            : '_:warning: :pause_button: See [workflow run](${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}) for reference_';
-          
-          let commentBody = `Hey, @${{ github.event.comment.user.login }}!
-          :cry: No one approved your run yet! Have someone from the @${context.repo.owner}/${{ inputs.team-name }} team ${isFailure ? 'comment' : 'run'} \`${{ inputs.approve-command }}\` and then try your command again
-
-          ${statusLine}
-          `;
-          
-          await github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: commentBody
-          })
-
-    - if: ${{ steps.check-approval.outputs.approved == 'true' && inputs.post-successful-approval-comment == 'true' }}
-      name: Create completed comment
-      uses: actions/github-script@v6
-      with:
-        github-token: ${{ inputs.token }}
-        script: |
-          let commentBody = `Hey, @${{ github.event.comment.user.login }}!
-          ${{ inputs.successful-approval-comment }}
-          `
-          await github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: commentBody
-          })
-
-    # if specified, exit with an error if approval is not found
-    - name: exit and fail workflow if not approved
-      if: ${{ inputs.fail-if-approval-not-found == 'true' && steps.check-approval.outputs.approved == 'false' }}
-      uses: actions/github-script@v6
-      with:
-        script: |
-          core.setFailed(`There is no ${{ inputs.approve-command }} command in the comments from someone in the @${context.repo.owner}/${{ inputs.team-name }} team`);
+  using: 'node20'
+  main: 'dist/index.js'
