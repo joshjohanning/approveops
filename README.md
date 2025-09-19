@@ -41,7 +41,7 @@ jobs:
 | --- | --- | --- | --- |
 | `token` | GitHub App installation token or PAT that has access to read+write comments and list the team's membership | `true` | `''` |
 | `approve-command` | The approval command to look for in the comments | `true` | `/approve` |
-| `team-name` | The name of the team in GitHub to check for the approval command, e.g. `approver-team` | `true` | `''` |
+| `team-name` | The name of the team in GitHub to check for the approval command, e.g. `approver-team`. **Note:** Team must exist in the same organization as the repository running the action | `true` | `''` |
 | `fail-if-approval-not-found` | Fail the action (show the action run as red) if the command is not found in the comments from someone in the approver team | `true` | `true` |
 | `post-successful-approval-comment` | Whether to post successful approval comment | `true` | `true` |
 | `successful-approval-comment` | Comment to post if an approval is found | `true` | `':tada:  You were able to run the workflow because someone left an approval in the comments!!'` |
