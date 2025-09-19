@@ -75,7 +75,7 @@ Notes:
 
 ### Runner Software Requirements
 
-No additional software requirements! This action now runs natively using Node.js and the GitHub REST API.
+No additional software requirements! `v3` of this action now runs natively using Node.js and the GitHub REST API.
 
 ## Breaking Changes
 
