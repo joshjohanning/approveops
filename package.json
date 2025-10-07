@@ -1,7 +1,7 @@
 {
   "name": "approveops",
   "description": "IssueOps (ChatOps) workflows that require Approvals from someone in a designated GitHub team",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "type": "module",
   "author": {
     "name": "Josh Johanning",
