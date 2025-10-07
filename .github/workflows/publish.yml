@@ -16,8 +16,6 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 20
-      - name: install ncc
-        run: npm i -g @vercel/ncc
       - uses: joshjohanning/publish-github-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
