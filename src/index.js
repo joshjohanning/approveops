@@ -1,5 +1,5 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
+import * as core from '@actions/core';
+import * as github from '@actions/github';
 
 /**
  * Get all comments for an issue with pagination
@@ -12,7 +12,6 @@ async function getAllComments(octokit, context) {
   let page = 1;
   const perPage = 100;
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const response = await octokit.rest.issues.listComments({
       owner: context.repo.owner,
@@ -45,7 +44,6 @@ async function getTeamMembers(octokit, org, teamSlug) {
   let page = 1;
   const perPage = 100;
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
       const response = await octokit.rest.teams.listMembersInOrg({
@@ -184,14 +182,9 @@ ${statusLine}`;
 }
 
 // Export functions for testing
-module.exports = {
-  getAllComments,
-  getTeamMembers,
-  postComment,
-  run
-};
+export { getAllComments, getTeamMembers, postComment, run };
 
-// Run the action if this file is executed directly
-if (require.main === module) {
+// Run the action if this file is executed directly (ES module equivalent)
+if (import.meta.url === `file://${process.argv[1]}`) {
   run();
 }

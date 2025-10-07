@@ -1,3 +1,5 @@
+import { jest } from '@jest/globals';
+
 // Mock the @actions/core module
 const mockCore = {
   getInput: jest.fn(),
@@ -34,11 +36,11 @@ const mockOctokit = {
   }
 };
 
-// Mock the modules before requiring the main module
-jest.mock('@actions/core', () => mockCore);
-jest.mock('@actions/github', () => mockGithub);
+// Mock the modules before importing the main module
+jest.unstable_mockModule('@actions/core', () => mockCore);
+jest.unstable_mockModule('@actions/github', () => mockGithub);
 
-const { getAllComments, getTeamMembers, run } = require('./index');
+const { getAllComments, getTeamMembers, run } = await import('./index.js');
 
 describe('ApproveOps Action', () => {
   beforeEach(() => {
