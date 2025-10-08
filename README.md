@@ -1,5 +1,9 @@
 # ApproveOps Action
 
+[![CI](https://github.com/joshjohanning/approveops/actions/workflows/ci.yml/badge.svg)](https://github.com/joshjohanning/bulk-github-repo-sync-action/actions/workflows/ci.yml)
+[![Publish GitHub Action](https://github.com/joshjohanning/approveops/actions/workflows/publish.yml/badge.svg)](https://github.com/joshjohanning/bulk-github-repo-sync-action/actions/workflows/publish.yml)
+![Coverage](./badges/coverage.svg)
+
 Approvals in IssueOps
 
 See the following guide on this action: https://josh-ops.com/posts/github-approveops/
