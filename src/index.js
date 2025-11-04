@@ -8,28 +8,12 @@ import * as github from '@actions/github';
  * @returns {Promise<Array>} All comments
  */
 async function getAllComments(octokit, context) {
-  const comments = [];
-  let page = 1;
-  const perPage = 100;
-
-  while (true) {
-    const response = await octokit.rest.issues.listComments({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      issue_number: context.issue.number,
-      per_page: perPage,
-      page: page
-    });
-
-    comments.push(...response.data);
-
-    if (response.data.length < perPage) {
-      break; // No more pages
-    }
-    page++;
-  }
-
-  return comments;
+  return await octokit.paginate(octokit.rest.issues.listComments, {
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    issue_number: context.issue.number,
+    per_page: 100
+  });
 }
 
 /**
@@ -40,34 +24,20 @@ async function getAllComments(octokit, context) {
  * @returns {Promise<Array>} All team member logins
  */
 async function getTeamMembers(octokit, org, teamSlug) {
-  const members = [];
-  let page = 1;
-  const perPage = 100;
+  try {
+    const members = await octokit.paginate(octokit.rest.teams.listMembersInOrg, {
+      org: org,
+      team_slug: teamSlug,
+      per_page: 100
+    });
 
-  while (true) {
-    try {
-      const response = await octokit.rest.teams.listMembersInOrg({
-        org: org,
-        team_slug: teamSlug,
-        per_page: perPage,
-        page: page
-      });
-
-      members.push(...response.data.map(member => member.login));
-
-      if (response.data.length < perPage) {
-        break; // No more pages
-      }
-      page++;
-    } catch (error) {
-      if (error.status === 404) {
-        throw new Error(`Team '${teamSlug}' doesn't exist or the token doesn't have access to it`);
-      }
-      throw error;
+    return members.map(member => member.login);
+  } catch (error) {
+    if (error.status === 404) {
+      throw new Error(`Team '${teamSlug}' doesn't exist or the token doesn't have access to it`);
     }
+    throw error;
   }
-
-  return members;
 }
 
 /**
@@ -184,7 +154,4 @@ ${statusLine}`;
 // Export functions for testing
 export { getAllComments, getTeamMembers, postComment, run };
 
-// Run the action if this file is executed directly (ES module equivalent)
-if (import.meta.url === `file://${process.argv[1]}`) {
-  run();
-}
+run();
