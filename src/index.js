@@ -8,7 +8,7 @@ import * as github from '@actions/github';
  * @returns {Promise<Array>} All comments
  */
 async function getAllComments(octokit, context) {
-  return await octokit.paginate(octokit.rest.issues.listComments, {
+  return octokit.paginate(octokit.rest.issues.listComments, {
     owner: context.repo.owner,
     repo: context.repo.repo,
     issue_number: context.issue.number,
