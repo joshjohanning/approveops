@@ -77,8 +77,9 @@ async function run() {
 
     // Get team membership
     core.info(`Getting team membership for: @${context.repo.owner}/${teamName}...`);
-    const teamMembers = await getTeamMembers(octokit, context.repo.owner, teamName);
-    core.info(`Found ${teamMembers.length} team members`);
+    const teamMemberLogins = await getTeamMembers(octokit, context.repo.owner, teamName);
+    const teamMembers = new Set(teamMemberLogins);
+    core.info(`Found ${teamMemberLogins.length} team members`);
 
     // Get all comments
     const comments = await getAllComments(octokit, context);
@@ -95,7 +96,7 @@ async function run() {
 
       if (body === approveCommand) {
         core.info(`Approval command found in comment id ${commentId}...`);
-        if (teamMembers.includes(actor)) {
+        if (teamMembers.has(actor)) {
           core.info(`Found ${actor} in team: ${teamName}`);
           authorized = true;
           approverActor = actor;
