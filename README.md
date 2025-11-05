@@ -93,6 +93,10 @@ The software running the GitHub Actions workflow must have Node.js version >=20 
 
 ## Breaking Changes
 
+### v2 to v3
+
+No breaking changes. The action was converted from a composite action to a native Node.js action.
+
 ### v1 to v2
 
 Extracting the logic for generating a GitHub App's installation token so that you can either use an alternative action or method to retrieve the token or to be able use a GitHub PAT instead.
