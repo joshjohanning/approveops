@@ -50,6 +50,9 @@ jobs:
 | `post-successful-approval-comment` | Whether to post successful approval comment                                                                                                                                     | `true`   | `true`                                                                                           |
 | `successful-approval-comment`      | Comment to post if an approval is found                                                                                                                                         | `true`   | `':tada:  You were able to run the workflow because someone left an approval in the comments!!'` |
 
+> [!NOTE]
+> The `approve-command` must match the entire comment text (whitespace is ignored). For example, `/approve` will match `/approve` or `/approve\n`, but not `I /approve this` or `/approve please`.
+
 ## Prerequisites
 
 ### Team and Authentication
