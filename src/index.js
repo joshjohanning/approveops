@@ -96,42 +96,41 @@ async function run() {
 
     // Check for approval command from team members
     let authorized = false;
-    let approverActor = null;
 
     for (const comment of comments) {
       const normalizedBody = normalizeCommand(comment.body);
       const actor = comment.user.login;
       const commentId = comment.id;
 
+      core.debug(`Checking comment id ${commentId} from ${actor}`);
+
       if (normalizedBody === normalizeCommand(approveCommand)) {
-        core.info(`Approval command found in comment id ${commentId}...`);
+        core.debug(`Approval command found in comment id ${commentId}`);
         if (teamMembers.has(actor)) {
-          core.info(`Found ${actor} in team: ${teamName}`);
+          core.info(`Approval authorized by ${actor} in comment id ${commentId}`);
           authorized = true;
-          approverActor = actor;
           break;
         } else {
-          core.info(`Not found ${actor} in team: ${teamName}`);
+          core.debug(`User ${actor} is not in team: ${teamName}`);
         }
-      } else {
-        core.info(`Approval command not found in comment id ${commentId}...`);
       }
+    }
+
+    // Log completion
+    if (!authorized) {
+      core.info('No authorized approval found in comments');
     }
 
     // Set output
     core.setOutput('approved', authorized.toString());
 
     if (authorized) {
-      core.info(`Approval authorized by ${approverActor}`);
-
       // Post successful approval comment if requested
       if (postSuccessfulApprovalComment) {
         const commentBody = `Hey, @${context.payload.comment.user.login}!\n${successfulApprovalComment}`;
         await postComment(octokit, context, commentBody);
       }
     } else {
-      core.info('Approval not found or not authorized');
-
       // Post rejection comment
       const isFailure = failIfApprovalNotFound;
       const statusLine = isFailure

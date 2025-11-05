@@ -6,7 +6,8 @@ const mockCore = {
   setOutput: jest.fn(),
   setFailed: jest.fn(),
   info: jest.fn(),
-  notice: jest.fn()
+  notice: jest.fn(),
+  debug: jest.fn()
 };
 
 // Mock the @actions/github module

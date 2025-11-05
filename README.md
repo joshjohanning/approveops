@@ -83,6 +83,11 @@ Notes:
 
 No additional software requirements! `v3` of this action now runs natively using Node.js and the GitHub REST API.
 
+The software running the GitHub Actions workflow must have Node.js version >=20 installed.
+
+> [!TIP]
+> Enable debug logging by setting the `ACTIONS_STEP_DEBUG` secret to `true` to see detailed approval checking logs. See [Enabling debug logging](https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/enabling-debug-logging).
+
 ## Breaking Changes
 
 ### v1 to v2
