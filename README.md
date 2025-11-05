@@ -50,6 +50,9 @@ jobs:
 | `post-successful-approval-comment` | Whether to post successful approval comment                                                                                                                                     | `true`   | `true`                                                                                           |
 | `successful-approval-comment`      | Comment to post if an approval is found                                                                                                                                         | `true`   | `':tada:  You were able to run the workflow because someone left an approval in the comments!!'` |
 
+> [!NOTE]
+> The `approve-command` must match the entire comment text (whitespace is ignored). For example, `/approve` will match `/approve` or `/approve\n`, but not `I /approve this` or `/approve please`.
+
 ## Prerequisites
 
 ### Team and Authentication
@@ -83,7 +86,16 @@ Notes:
 
 No additional software requirements! `v3` of this action now runs natively using Node.js and the GitHub REST API.
 
+The software running the GitHub Actions workflow must have Node.js version >=20 installed.
+
+> [!TIP]
+> Enable debug logging by setting the `ACTIONS_STEP_DEBUG` secret to `true` to see detailed approval checking logs. See [Enabling debug logging](https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/enabling-debug-logging).
+
 ## Breaking Changes
+
+### v2 to v3
+
+No breaking changes. The action was converted from a composite action to a native Node.js action.
 
 ### v1 to v2
 

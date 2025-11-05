@@ -2,34 +2,27 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 
 /**
+ * Normalize command text by removing all whitespace
+ * @param {string} text - Text to normalize
+ * @returns {string} Normalized text
+ */
+function normalizeCommand(text) {
+  return text.replace(/\s/g, '');
+}
+
+/**
  * Get all comments for an issue with pagination
  * @param {object} octokit - Octokit instance
  * @param {object} context - GitHub context
  * @returns {Promise<Array>} All comments
  */
 async function getAllComments(octokit, context) {
-  const comments = [];
-  let page = 1;
-  const perPage = 100;
-
-  while (true) {
-    const response = await octokit.rest.issues.listComments({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      issue_number: context.issue.number,
-      per_page: perPage,
-      page: page
-    });
-
-    comments.push(...response.data);
-
-    if (response.data.length < perPage) {
-      break; // No more pages
-    }
-    page++;
-  }
-
-  return comments;
+  return octokit.paginate(octokit.rest.issues.listComments, {
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    issue_number: context.issue.number,
+    per_page: 100
+  });
 }
 
 /**
@@ -40,34 +33,20 @@ async function getAllComments(octokit, context) {
  * @returns {Promise<Array>} All team member logins
  */
 async function getTeamMembers(octokit, org, teamSlug) {
-  const members = [];
-  let page = 1;
-  const perPage = 100;
+  try {
+    const members = await octokit.paginate(octokit.rest.teams.listMembersInOrg, {
+      org: org,
+      team_slug: teamSlug,
+      per_page: 100
+    });
 
-  while (true) {
-    try {
-      const response = await octokit.rest.teams.listMembersInOrg({
-        org: org,
-        team_slug: teamSlug,
-        per_page: perPage,
-        page: page
-      });
-
-      members.push(...response.data.map(member => member.login));
-
-      if (response.data.length < perPage) {
-        break; // No more pages
-      }
-      page++;
-    } catch (error) {
-      if (error.status === 404) {
-        throw new Error(`Team '${teamSlug}' doesn't exist or the token doesn't have access to it`);
-      }
-      throw error;
+    return members.map(member => member.login);
+  } catch (error) {
+    if (error.status === 404) {
+      throw new Error(`Team '${teamSlug}' doesn't exist or the token doesn't have access to it`);
     }
+    throw error;
   }
-
-  return members;
 }
 
 /**
@@ -107,8 +86,9 @@ async function run() {
 
     // Get team membership
     core.info(`Getting team membership for: @${context.repo.owner}/${teamName}...`);
-    const teamMembers = await getTeamMembers(octokit, context.repo.owner, teamName);
-    core.info(`Found ${teamMembers.length} team members`);
+    const teamMemberLogins = await getTeamMembers(octokit, context.repo.owner, teamName);
+    const teamMembers = new Set(teamMemberLogins);
+    core.info(`Found ${teamMemberLogins.length} team members`);
 
     // Get all comments
     const comments = await getAllComments(octokit, context);
@@ -116,42 +96,41 @@ async function run() {
 
     // Check for approval command from team members
     let authorized = false;
-    let approverActor = null;
 
     for (const comment of comments) {
-      const body = comment.body.replace(/\s/g, '').replace(/\r?\n/g, ''); // Remove spaces and newlines
+      const normalizedBody = normalizeCommand(comment.body);
       const actor = comment.user.login;
       const commentId = comment.id;
 
-      if (body === approveCommand) {
-        core.info(`Approval command found in comment id ${commentId}...`);
-        if (teamMembers.includes(actor)) {
-          core.info(`Found ${actor} in team: ${teamName}`);
+      core.debug(`Checking comment id ${commentId} from ${actor}`);
+
+      if (normalizedBody === normalizeCommand(approveCommand)) {
+        core.debug(`Approval command found in comment id ${commentId}`);
+        if (teamMembers.has(actor)) {
+          core.info(`Approval authorized by ${actor} in comment id ${commentId}`);
           authorized = true;
-          approverActor = actor;
           break;
         } else {
-          core.info(`Not found ${actor} in team: ${teamName}`);
+          core.debug(`User ${actor} is not in team: ${teamName}`);
         }
-      } else {
-        core.info(`Approval command not found in comment id ${commentId}...`);
       }
+    }
+
+    // Log completion
+    if (!authorized) {
+      core.info('No authorized approval found in comments');
     }
 
     // Set output
     core.setOutput('approved', authorized.toString());
 
     if (authorized) {
-      core.info(`Approval authorized by ${approverActor}`);
-
       // Post successful approval comment if requested
       if (postSuccessfulApprovalComment) {
         const commentBody = `Hey, @${context.payload.comment.user.login}!\n${successfulApprovalComment}`;
         await postComment(octokit, context, commentBody);
       }
     } else {
-      core.info('Approval not found or not authorized');
-
       // Post rejection comment
       const isFailure = failIfApprovalNotFound;
       const statusLine = isFailure
@@ -182,9 +161,6 @@ ${statusLine}`;
 }
 
 // Export functions for testing
-export { getAllComments, getTeamMembers, postComment, run };
+export { normalizeCommand, getAllComments, getTeamMembers, postComment, run };
 
-// Run the action if this file is executed directly (ES module equivalent)
-if (import.meta.url === `file://${process.argv[1]}`) {
-  run();
-}
+run();
