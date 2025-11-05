@@ -2,6 +2,15 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 
 /**
+ * Normalize command text by removing all whitespace
+ * @param {string} text - Text to normalize
+ * @returns {string} Normalized text
+ */
+function normalizeCommand(text) {
+  return text.replace(/\s/g, '');
+}
+
+/**
  * Get all comments for an issue with pagination
  * @param {object} octokit - Octokit instance
  * @param {object} context - GitHub context
@@ -90,11 +99,11 @@ async function run() {
     let approverActor = null;
 
     for (const comment of comments) {
-      const body = comment.body.replace(/\s/g, ''); // Remove all whitespace
+      const normalizedBody = normalizeCommand(comment.body);
       const actor = comment.user.login;
       const commentId = comment.id;
 
-      if (body === approveCommand) {
+      if (normalizedBody === normalizeCommand(approveCommand)) {
         core.info(`Approval command found in comment id ${commentId}...`);
         if (teamMembers.has(actor)) {
           core.info(`Found ${actor} in team: ${teamName}`);
@@ -153,6 +162,6 @@ ${statusLine}`;
 }
 
 // Export functions for testing
-export { getAllComments, getTeamMembers, postComment, run };
+export { normalizeCommand, getAllComments, getTeamMembers, postComment, run };
 
 run();
