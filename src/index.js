@@ -89,7 +89,7 @@ async function run() {
     let approverActor = null;
 
     for (const comment of comments) {
-      const body = comment.body.replace(/\s/g, '').replace(/\r?\n/g, ''); // Remove spaces and newlines
+      const body = comment.body.replace(/\s/g, ''); // Remove all whitespace
       const actor = comment.user.login;
       const commentId = comment.id;
 
