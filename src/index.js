@@ -94,6 +94,9 @@ async function run() {
     const comments = await getAllComments(octokit, context);
     core.info(`Found ${comments.length} comments to check`);
 
+    // Normalize approval command
+    const normalizedApproveCommand = normalizeCommand(approveCommand);
+
     // Check for approval command from team members
     let authorized = false;
 
@@ -104,7 +107,7 @@ async function run() {
 
       core.debug(`Checking comment id ${commentId} from ${actor}`);
 
-      if (normalizedBody === normalizeCommand(approveCommand)) {
+      if (normalizedBody === normalizedApproveCommand) {
         core.debug(`Approval command found in comment id ${commentId}`);
         if (teamMembers.has(actor)) {
           core.info(`Approval authorized by ${actor} in comment id ${commentId}`);
