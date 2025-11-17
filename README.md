@@ -2,7 +2,7 @@
 
 [![GitHub release](https://img.shields.io/github/release/joshjohanning/approveops.svg?logo=github&labelColor=333)](https://github.com/joshjohanning/approveops/releases)
 [![Immutable Releases](https://img.shields.io/badge/releases-immutable-blue?labelColor=333)](https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/immutable-releases)
-[![GitHub marketplace](https://img.shields.io/badge/marketplace-ApproveOps-blue?logo=github&labelColor=333)](https://github.com/marketplace/actions/approveops)
+[![GitHub marketplace](https://img.shields.io/badge/marketplace-ApproveOps-blue?logo=github&labelColor=333)](https://github.com/marketplace/actions/approveops-approvals-in-issueops)
 [![CI](https://github.com/joshjohanning/approveops/actions/workflows/ci.yml/badge.svg)](https://github.com/joshjohanning/approveops/actions/workflows/ci.yml)
 [![Publish GitHub Action](https://github.com/joshjohanning/approveops/actions/workflows/publish.yml/badge.svg)](https://github.com/joshjohanning/approveops/actions/workflows/publish.yml)
 ![Coverage](./badges/coverage.svg)
