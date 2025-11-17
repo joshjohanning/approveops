@@ -43,7 +43,7 @@ async function getTeamMembers(octokit, org, teamSlug) {
     return members.map(member => member.login);
   } catch (error) {
     if (error.status === 404) {
-      throw new Error(`Team '${teamSlug}' doesn't exist or the token doesn't have access to it`);
+      throw new Error(`Team '${teamSlug}' not found in '${org}' or token doesn't have permission to access it`);
     }
     throw error;
   }

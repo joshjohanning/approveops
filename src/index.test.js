@@ -124,7 +124,7 @@ describe('ApproveOps Action', () => {
       });
 
       await expect(getTeamMembers(mockOctokit, 'test-org', 'nonexistent-team')).rejects.toThrow(
-        `Team 'nonexistent-team' doesn't exist`
+        `Team 'nonexistent-team' not found in 'test-org' or token doesn't have permission to access it`
       );
     });
   });
