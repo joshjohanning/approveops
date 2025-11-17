@@ -32,7 +32,7 @@ jobs:
           private-key: ${{ secrets.PRIVATE_KEY }}
 
       - name: ApproveOps - Approvals in IssueOps
-        uses: joshjohanning/approveops@v2
+        uses: joshjohanning/approveops@v3
         id: check-approval
         with:
           token: ${{ steps.app-token.outputs.token }}
