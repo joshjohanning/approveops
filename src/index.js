@@ -54,6 +54,7 @@ async function getTeamMembers(octokit, org, teamSlug) {
  * @param {object} octokit - Octokit instance
  * @param {object} context - GitHub context
  * @param {string} body - Comment body
+ * @returns {Promise<void>}
  */
 async function postComment(octokit, context, body) {
   await octokit.rest.issues.createComment({
@@ -66,6 +67,7 @@ async function postComment(octokit, context, body) {
 
 /**
  * Main function
+ * @returns {Promise<void>}
  */
 async function run() {
   try {
