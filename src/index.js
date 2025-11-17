@@ -43,7 +43,7 @@ async function getTeamMembers(octokit, org, teamSlug) {
     return members.map(member => member.login);
   } catch (error) {
     if (error.status === 404) {
-      throw new Error(`Team '${teamSlug}' doesn't exist or the token doesn't have access to it`);
+      throw new Error(`Team '${teamSlug}' not found in '${org}' or token doesn't have permission to access it`);
     }
     throw error;
   }
@@ -54,6 +54,7 @@ async function getTeamMembers(octokit, org, teamSlug) {
  * @param {object} octokit - Octokit instance
  * @param {object} context - GitHub context
  * @param {string} body - Comment body
+ * @returns {Promise<void>}
  */
 async function postComment(octokit, context, body) {
   await octokit.rest.issues.createComment({
@@ -66,6 +67,7 @@ async function postComment(octokit, context, body) {
 
 /**
  * Main function
+ * @returns {Promise<void>}
  */
 async function run() {
   try {
