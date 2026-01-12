@@ -1,7 +1,7 @@
 {
   "name": "approveops",
   "description": "IssueOps (ChatOps) workflows that require Approvals from someone in a designated GitHub team",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "type": "module",
   "author": {
     "name": "Josh Johanning",
@@ -44,8 +44,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^2.0.1",
-    "@actions/github": "^6.0.1"
+    "@actions/core": "^2.0.2",
+    "@actions/github": "^7.0.0"
   },
   "devDependencies": {
     "@joshjohanning/make-coverage-badge-better": "^1.0.1",
