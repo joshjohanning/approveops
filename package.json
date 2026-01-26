@@ -45,7 +45,7 @@
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^2.0.2",
-    "@actions/github": "^7.0.0"
+    "@actions/github": "^8.0.0"
   },
   "devDependencies": {
     "@joshjohanning/make-coverage-badge-better": "^1.0.1",
