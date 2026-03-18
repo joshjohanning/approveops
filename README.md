@@ -91,7 +91,7 @@ Notes:
 
 ### Runner Software Requirements
 
-No additional software requirements! `v4` of this action now runs natively using Node.js and the GitHub REST API.
+No additional software requirements! This action runs natively using Node.js and the GitHub REST API.
 
 The software running the GitHub Actions workflow must have Node.js version >=24 installed.
 
