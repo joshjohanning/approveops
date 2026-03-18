@@ -29,7 +29,7 @@ jobs:
     if: contains(github.event.comment.body, '/do-stuff')
 
     steps:
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ vars.APP_ID }}
@@ -72,7 +72,7 @@ jobs:
     - **read & write** on `Repository / Issues` to create the comment
     - **read-only** on `Organization / Members` to list the members of the team
   - Generate a `PRIVATE_KEY` for the GitHub app and store it as a repo or organizational secret
-  - Note the `APP ID` to use as an input for an action like `actions/create-github-app-token@v1`
+  - Note the `APP ID` to use as an input for an action like `actions/create-github-app-token@v3`
 - Classic PAT
   - If you are using a classic PAT, it will need the following scopes:
   - `repo` - to create the comment
