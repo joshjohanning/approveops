@@ -35,5 +35,5 @@ outputs:
     description: "Returns 'true' if the approval command was found in a comment from someone in the approver team, otherwise 'false'"
 
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'dist/index.js'
