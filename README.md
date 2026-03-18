@@ -11,6 +11,10 @@ Approvals in IssueOps
 
 See the following guide on this action: https://josh-ops.com/posts/github-approveops/
 
+## What's new
+
+Please refer to the [release page](https://github.com/joshjohanning/approveops/releases) for the latest release notes.
+
 ## Usage
 
 ```yml
@@ -25,14 +29,14 @@ jobs:
     if: contains(github.event.comment.body, '/do-stuff')
 
     steps:
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
 
       - name: ApproveOps - Approvals in IssueOps
-        uses: joshjohanning/approveops@v3
+        uses: joshjohanning/approveops@v4
         id: check-approval
         with:
           token: ${{ steps.app-token.outputs.token }}
@@ -68,7 +72,7 @@ jobs:
     - **read & write** on `Repository / Issues` to create the comment
     - **read-only** on `Organization / Members` to list the members of the team
   - Generate a `PRIVATE_KEY` for the GitHub app and store it as a repo or organizational secret
-  - Note the `APP ID` to use as an input for an action like `actions/create-github-app-token@v1`
+  - Note the `APP ID` to use as an input for an action like `actions/create-github-app-token@v3`
 - Classic PAT
   - If you are using a classic PAT, it will need the following scopes:
   - `repo` - to create the comment
@@ -87,14 +91,18 @@ Notes:
 
 ### Runner Software Requirements
 
-No additional software requirements! `v3` of this action now runs natively using Node.js and the GitHub REST API.
+No additional software requirements! This action runs natively using Node.js and the GitHub REST API.
 
-The software running the GitHub Actions workflow must have Node.js version >=20 installed.
+The software running the GitHub Actions workflow must have Node.js version >=24 installed.
 
 > [!TIP]
 > Enable debug logging by setting the `ACTIONS_STEP_DEBUG` secret to `true` to see detailed approval checking logs. See [Enabling debug logging](https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/enabling-debug-logging).
 
 ## Breaking Changes
+
+### v3 to v4
+
+Updated GitHub Actions runtime from node20 to node24. Bumped major version to v4.
 
 ### v2 to v3
 

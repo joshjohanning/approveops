@@ -1,7 +1,7 @@
 {
   "name": "approveops",
   "description": "IssueOps (ChatOps) workflows that require Approvals from someone in a designated GitHub team",
-  "version": "3.0.8",
+  "version": "4.0.0",
   "type": "module",
   "author": {
     "name": "Josh Johanning",
@@ -28,7 +28,7 @@
     ".": "./dist/index.js"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "scripts": {
     "bundle": "npm run format:write && npm run package",
