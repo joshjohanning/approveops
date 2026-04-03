@@ -353,6 +353,30 @@ describe('ApproveOps Action', () => {
       expect(mockCore.info).toHaveBeenCalledWith(expect.stringContaining('comment id 1'));
     });
 
+    test('should approve when first /approve is from non-team member but later one is from team member', async () => {
+      mockOctokit.paginate.mockResolvedValueOnce([{ login: 'team-member' }]);
+
+      mockOctokit.paginate.mockResolvedValueOnce([
+        {
+          id: 1,
+          body: '/approve',
+          user: { login: 'non-team-member' }
+        },
+        {
+          id: 2,
+          body: '/approve',
+          user: { login: 'team-member' }
+        }
+      ]);
+
+      mockOctokit.rest.issues.createComment.mockResolvedValue({});
+
+      await run();
+
+      expect(mockCore.setOutput).toHaveBeenCalledWith('approved', 'true');
+      expect(mockCore.info).toHaveBeenCalledWith(expect.stringContaining('comment id 2'));
+    });
+
     test('should handle case-sensitive approval command', async () => {
       mockOctokit.paginate.mockResolvedValueOnce([{ login: 'team-member' }]);
 
