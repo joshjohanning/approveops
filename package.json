@@ -1,7 +1,7 @@
 {
   "name": "approveops",
   "description": "IssueOps (ChatOps) workflows that require Approvals from someone in a designated GitHub team",
-  "version": "4.0.3",
+  "version": "4.0.4",
   "type": "module",
   "author": {
     "name": "Josh Johanning",
@@ -49,15 +49,15 @@
   },
   "devDependencies": {
     "@joshjohanning/make-coverage-badge-better": "^1.0.1",
-    "@vercel/ncc": "^0.44.1",
+    "@vercel/ncc": "^0.45.0",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-github": "^6.1.1",
+    "eslint-plugin-github": "^6.1.2",
     "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-jest": "^29.16.0",
+    "eslint-plugin-jest": "^29.16.5",
     "eslint-plugin-prettier": "^5.5.6",
-    "globals": "^17.7.0",
-    "jest": "^30.4.2",
+    "globals": "^17.11.0",
+    "jest": "^30.5.0",
     "prettier": "^3.9.6"
   }
 }
